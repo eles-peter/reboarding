@@ -8,9 +8,6 @@ public class ReboardingDayData {
     private int dailyCapacity;
     private CopyOnWriteArrayList<User> signedUserList;
 
-    public ReboardingDayData() {
-    }
-
     public ReboardingDayData(int dailyCapacity) {
         this.dailyCapacity = dailyCapacity;
         signedUserList = new CopyOnWriteArrayList<>();
@@ -48,10 +45,15 @@ public class ReboardingDayData {
         return status;
     }
 
-    public String exit(long userId) {
-        // TODO: vizsgálni hogy bent van e
-        signedUserList.remove(findUserById(userId));
-        return "";
+    public boolean exit(long userId) {
+        User user = findUserById(userId);
+
+        if (user != null && user.isCheckedIn()) {
+            signedUserList.remove(user);
+            return true;
+        }
+
+        return false;
     }
 
     public User findUserById(long userId) {
@@ -88,18 +90,6 @@ public class ReboardingDayData {
 
     public CopyOnWriteArrayList<User> getSignedUserList() { //TODO ezt átgondolni, hogy sima ArrayList-et kapjunk vissza
         return signedUserList;
-    }
-
-    public void setDailyCapacity(int dailyCapacity) {
-        this.dailyCapacity = dailyCapacity;
-    }
-
-    public void setSignedUserList(CopyOnWriteArrayList<User> signedUserList) {
-        this.signedUserList = signedUserList;
-    }
-
-    public void setSignedUserList(List<User> signedUserList) {
-        this.signedUserList = new CopyOnWriteArrayList<>(signedUserList);
     }
 
     @Override

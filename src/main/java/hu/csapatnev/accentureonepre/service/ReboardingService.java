@@ -36,10 +36,6 @@ public class ReboardingService {
         reboardingDays = createReboardingDays();
     }
 
-    public ReboardingService(Map<LocalDate, ReboardingDayData> reboardingDays) {
-        this.reboardingDays = reboardingDays;
-    }
-
     private Map<LocalDate, ReboardingDayData> createReboardingDays() {
         Map<LocalDate, ReboardingDayData> reboardingDays = new HashMap<>();
         for (LocalDate day = stepTo10; day.isBefore(stepTo100); day = day.plusDays(1)) {

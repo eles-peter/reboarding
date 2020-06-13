@@ -62,6 +62,45 @@ class ReboardingDayDataTest {
     }
 
     @Test
+    void testExit_CheckedIn() {
+        reboardingDayData.register(1L);
+        reboardingDayData.findUserById(1L).setCheckedIn(true);
+        Assertions.assertTrue(reboardingDayData.exit(1L));
+        Assertions.assertEquals(0, reboardingDayData.getSignedUserList().size());
+    }
+
+    @Test
+    void testExit_NotCheckedIn() {
+        reboardingDayData.register(1L);
+        Assertions.assertFalse(reboardingDayData.exit(1L));
+        Assertions.assertEquals(1, reboardingDayData.getSignedUserList().size());
+    }
+
+    @Test
+    void testExit_NotInList() {
+        Assertions.assertFalse(reboardingDayData.exit(1L));
+    }
+
+    @Test
+    void testEntry_NotCheckedIn() {
+        reboardingDayData.register(1L);
+        Assertions.assertTrue(reboardingDayData.entry(1L));
+        Assertions.assertTrue(reboardingDayData.findUserById(1L).isCheckedIn());
+    }
+
+    @Test
+    void testEntry_CheckedIn() {
+        reboardingDayData.register(1L);
+        reboardingDayData.findUserById(1L).setCheckedIn(true);
+        Assertions.assertFalse(reboardingDayData.entry(1L));
+    }
+
+    @Test
+    void testEntry_NotInlist() {
+        Assertions.assertFalse(reboardingDayData.entry(1L));
+    }
+
+    @Test
     void isAccepted() {
     }
 }
