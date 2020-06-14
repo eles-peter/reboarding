@@ -18,9 +18,9 @@ jobs:
         run: docker run -p 8080:8080 -d --rm --name reboarding-test reboarding
       # Setup test environment
       - name: Use Node.js
-          uses: actions/setup-node@v1
-          with:
-            node-version: '12.x'
+        uses: actions/setup-node@v1
+        with:
+          node-version: '12.x'
       # Run Api tests
       - name: Postman tests
         working-directory: ./postman
