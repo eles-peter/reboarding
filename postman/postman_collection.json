@@ -19,7 +19,7 @@
 							"let json = pm.response.json();\r",
 							"\r",
 							"pm.test(\"Test isAccepted\", () => {\r",
-							"    pm.expect(json.result.status).to.eql(\"accepted\");\r",
+							"    pm.expect(json.result.status).to.eql(\"kecske\");\r",
 							"});\r",
 							"\r",
 							"\r",
