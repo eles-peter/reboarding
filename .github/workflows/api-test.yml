@@ -1,0 +1,23 @@
+name: API test
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build docker image
+        run: docker image build -t reboarding .
+      - name: Run container
+        run: docker run -p 8080:8080 -d --rm --name reboarding-test reboarding
+      - uses: matt-ball/newman-action@master
+        with:
+          collection: postman/postman_collection.json
+          globals: postman/postman_globals.json
+      - name: Stop and Remove container
+        run: docker rm -f reboarding-test

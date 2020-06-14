@@ -7,3 +7,9 @@ Build the image:
 
 Run the docker image:  
 `docker run -p 8080:8080 -d reboarding [args]`
+
+## Running Postman api test with newman
+
+```
+newman run postman/postman_collection.json -g postman/postman_globals.json   
+```
