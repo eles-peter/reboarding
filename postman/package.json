@@ -1,0 +1,13 @@
+{
+  "name": "postman",
+  "version": "1.0.0",
+  "description": "run postman tests with newman",
+  "main": "index.js",
+  "scripts": {
+    "test": "newman run postman_collection.json -g postman_globals.json"
+  },
+  "author": "csapatnev",
+  "dependencies": {
+    "newman": "^5.1.0"
+  }
+}
