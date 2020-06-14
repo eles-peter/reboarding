@@ -1,5 +1,7 @@
 package hu.csapatnev.accentureonepre.controller;
 
+import hu.csapatnev.accentureonepre.dto.Query;
+import hu.csapatnev.accentureonepre.dto.Response;
 import hu.csapatnev.accentureonepre.service.ReboardingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -7,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import javax.validation.constraints.FutureOrPresent;
 import java.time.LocalDate;
 
@@ -23,38 +24,42 @@ public class ReboardingController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(
+    public ResponseEntity<Response> register(
             @RequestParam("userId") Long userId,
             @RequestParam(value = "day", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @FutureOrPresent LocalDate day) {
         if (day == null) {
             day = LocalDate.now();
         }
-        String status = reboardingService.register(day, userId);
-        return new ResponseEntity<>(status, HttpStatus.OK);
+        Query requestData = new Query(day, userId);
+        Response response = new Response(requestData, reboardingService.register(requestData));
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/status")
-    public ResponseEntity<String> getStatus(
+    public ResponseEntity<Response> getStatus(
             @RequestParam("userId") Long userId,
             @RequestParam(value = "day", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @FutureOrPresent LocalDate day) {
         if (day == null) {
             day = LocalDate.now();
         }
-        String status = reboardingService.getStatus(day, userId);
-        return new ResponseEntity<>(status, HttpStatus.OK);
+        Query requestData = new Query(day, userId);
+        Response response = new Response(requestData, reboardingService.getStatus(requestData));
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/entry/{userId}")
-    public ResponseEntity<Boolean> isAccepted(@PathVariable Long userId) {
-        Boolean isAccepted = reboardingService.entry(LocalDate.now(), userId);
-        return new ResponseEntity<>(isAccepted, HttpStatus.OK);
+    public ResponseEntity<Response> isAccepted(@PathVariable Long userId) {
+        Query requestData = new Query(LocalDate.now(), userId);
+        Response response = new Response(requestData, reboardingService.entry(requestData));
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/exit/{userId}")
-    public ResponseEntity<Void> remove(@PathVariable Long userId) {
+    public ResponseEntity<Response> remove(@PathVariable Long userId) {
         //TODO ennek valami visszatérési értéket?
-        reboardingService.remove(LocalDate.now(), userId);
-        return new ResponseEntity<>(HttpStatus.OK);
+        Query requestData = new Query(LocalDate.now(), userId);
+        Response response = new Response(requestData, reboardingService.remove(requestData));
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 
