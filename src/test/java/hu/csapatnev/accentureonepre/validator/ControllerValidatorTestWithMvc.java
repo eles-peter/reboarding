@@ -30,7 +30,7 @@ public class ControllerValidatorTestWithMvc {
     @BeforeEach
     private void init() {
         ReboardingService reboardingService = applicationContext.getBean(ReboardingService.class);
-        reboardingService.setReboardingService(250,
+        reboardingService.setReboardingService(
                 LocalDate.now().minusDays(30),
                 LocalDate.now().minusDays(15),
                 LocalDate.now(),

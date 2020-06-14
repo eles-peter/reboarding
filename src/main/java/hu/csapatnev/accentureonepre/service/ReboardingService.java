@@ -17,7 +17,6 @@ public class ReboardingService {
     private LocalDate stepTo20 = LocalDate.of(2020, 7,15);
     private LocalDate stepTo30 = LocalDate.of(2020, 7,30);
     private LocalDate stepTo50 = LocalDate.of(2020, 8,15);
-
     private LocalDate stepTo100 = LocalDate.of(2020, 8,30);
 
     private Map<LocalDate, ReboardingDayData> reboardingDays;
@@ -27,12 +26,9 @@ public class ReboardingService {
 
     public void setReboardingService() {
         reboardingDays = createReboardingDays();
-        System.out.println(this);
     }
 
-    public void setReboardingService(int fullCapacity, LocalDate stepTo10, LocalDate stepTo20, LocalDate stepTo30, LocalDate stepTo50, LocalDate stepTo100) {
-        validOrThrow(fullCapacity, stepTo10, stepTo20, stepTo30, stepTo50, stepTo100);
-        this.fullCapacity = fullCapacity;
+    public void setReboardingService(LocalDate stepTo10, LocalDate stepTo20, LocalDate stepTo30, LocalDate stepTo50, LocalDate stepTo100) {
         this.stepTo10 = stepTo10;
         this.stepTo20 = stepTo20;
         this.stepTo30 = stepTo30;

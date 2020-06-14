@@ -19,7 +19,6 @@ class ReboardingServiceTest {
     public void init() {
         reboardingService = new ReboardingService();
         reboardingService.setReboardingService(
-                250,
                 LocalDate.of(2020,6, 30),
                 LocalDate.of(2020,7, 15),
                 LocalDate.of(2020,7, 30),

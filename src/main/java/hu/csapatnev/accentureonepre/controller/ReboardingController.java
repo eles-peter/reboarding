@@ -30,7 +30,9 @@ public class ReboardingController {
     @PostMapping("/register")
     public ResponseEntity<Response> register(
             @RequestParam("userId") Long userId,
-            @RequestParam(value = "day", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @FutureOrPresent LocalDate day) {
+            @RequestParam(value = "day", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            @FutureOrPresent @NotBeforeStep10 @BeforeStep100 LocalDate day) {
         if (day == null) {
             day = LocalDate.now();
         }
@@ -62,7 +64,6 @@ public class ReboardingController {
 
     @GetMapping("/exit/{userId}")
     public ResponseEntity<Response> remove(@PathVariable Long userId) {
-        //TODO ennek valami visszatérési értéket?
         Query requestData = new Query(LocalDate.now(), userId);
         Response response = new Response(requestData, reboardingService.remove(requestData));
         return new ResponseEntity<>(response, HttpStatus.OK);
