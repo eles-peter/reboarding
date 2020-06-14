@@ -29,3 +29,4 @@ build/
 
 ### VS Code ###
 .vscode/
+/postman/node_modules/
