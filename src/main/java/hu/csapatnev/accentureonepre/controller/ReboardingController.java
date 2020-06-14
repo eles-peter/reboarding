@@ -1,16 +1,20 @@
 package hu.csapatnev.accentureonepre.controller;
 
 import hu.csapatnev.accentureonepre.service.ReboardingService;
+import hu.csapatnev.accentureonepre.validator.BeforeStep100;
+import hu.csapatnev.accentureonepre.validator.NotBeforeStep10;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import javax.validation.constraints.FutureOrPresent;
+
 import java.time.LocalDate;
 
+@Validated
 @RestController
 @RequestMapping("/api/reboarding")
 public class ReboardingController {
@@ -25,22 +29,30 @@ public class ReboardingController {
     @PostMapping("/register")
     public ResponseEntity<String> register(
             @RequestParam("userId") Long userId,
-            @RequestParam(value = "day", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @FutureOrPresent LocalDate day) {
+            @RequestParam(value = "day", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            @FutureOrPresent @NotBeforeStep10 @BeforeStep100 LocalDate day) {
         if (day == null) {
             day = LocalDate.now();
         }
+
         String status = reboardingService.register(day, userId);
+
         return new ResponseEntity<>(status, HttpStatus.OK);
     }
 
     @GetMapping("/status")
     public ResponseEntity<String> getStatus(
             @RequestParam("userId") Long userId,
-            @RequestParam(value = "day", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @FutureOrPresent LocalDate day) {
+            @RequestParam(value = "day", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            @FutureOrPresent @NotBeforeStep10 @BeforeStep100 LocalDate day) {
         if (day == null) {
             day = LocalDate.now();
         }
+
         String status = reboardingService.getStatus(day, userId);
+
         return new ResponseEntity<>(status, HttpStatus.OK);
     }
 
@@ -56,6 +68,5 @@ public class ReboardingController {
         reboardingService.remove(LocalDate.now(), userId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
 
 }
