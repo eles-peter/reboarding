@@ -6,4 +6,4 @@ Build the image:
 `docker image build -t reboarding .`
 
 Run the docker image:  
-`docker run -p 8080:8080 -d accenture-reboarding`
+`docker run -p 8080:8080 -d reboarding [args]`
