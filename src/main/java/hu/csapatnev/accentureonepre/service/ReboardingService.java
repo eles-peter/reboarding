@@ -12,10 +12,12 @@ import java.util.Map;
 public class ReboardingService {
 
     private int fullCapacity = 250;
+
     private LocalDate stepTo10 = LocalDate.of(2020, 6,30);
     private LocalDate stepTo20 = LocalDate.of(2020, 7,15);
     private LocalDate stepTo30 = LocalDate.of(2020, 7,30);
     private LocalDate stepTo50 = LocalDate.of(2020, 8,15);
+
     private LocalDate stepTo100 = LocalDate.of(2020, 8,30);
 
     private Map<LocalDate, ReboardingDayData> reboardingDays;
@@ -25,6 +27,7 @@ public class ReboardingService {
 
     public void setReboardingService() {
         reboardingDays = createReboardingDays();
+        System.out.println(this);
     }
 
     public void setReboardingService(int fullCapacity, LocalDate stepTo10, LocalDate stepTo20, LocalDate stepTo30, LocalDate stepTo50, LocalDate stepTo100) {
@@ -96,6 +99,14 @@ public class ReboardingService {
 
     public void setReboardingDays(Map<LocalDate, ReboardingDayData> reboardingDays) {
         this.reboardingDays = reboardingDays;
+    }
+
+    public LocalDate getStepTo10() {
+        return stepTo10;
+    }
+
+    public LocalDate getStepTo100() {
+        return stepTo100;
     }
 
     @Override

@@ -3,15 +3,19 @@ package hu.csapatnev.accentureonepre.controller;
 import hu.csapatnev.accentureonepre.dto.Query;
 import hu.csapatnev.accentureonepre.dto.Response;
 import hu.csapatnev.accentureonepre.service.ReboardingService;
+import hu.csapatnev.accentureonepre.validator.BeforeStep100;
+import hu.csapatnev.accentureonepre.validator.NotBeforeStep10;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.FutureOrPresent;
 import java.time.LocalDate;
 
+@Validated
 @RestController
 @RequestMapping("/api/reboarding")
 public class ReboardingController {
@@ -38,7 +42,9 @@ public class ReboardingController {
     @GetMapping("/status")
     public ResponseEntity<Response> getStatus(
             @RequestParam("userId") Long userId,
-            @RequestParam(value = "day", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) @FutureOrPresent LocalDate day) {
+            @RequestParam(value = "day", required = false)
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            @FutureOrPresent @NotBeforeStep10 @BeforeStep100 LocalDate day) {
         if (day == null) {
             day = LocalDate.now();
         }
@@ -61,6 +67,5 @@ public class ReboardingController {
         Response response = new Response(requestData, reboardingService.remove(requestData));
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
-
 
 }
