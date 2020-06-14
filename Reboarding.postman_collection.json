@@ -1,0 +1,187 @@
+{
+	"info": {
+		"_postman_id": "efe4510f-7f3b-47f3-bc44-2cd9a643fddf",
+		"name": "Reboarding",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "TestRegister_UnderDailyLimit",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "adf6b3f9-8e8b-4f78-95a8-cafcf951d051",
+						"exec": [
+							"pm.test(\"test HttpStatus\", () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"let json = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Test isAccepted\", () => {\r",
+							"    pm.expect(json.result.status).to.eql(\"accepted\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Test message\", () => {\r",
+							"    pm.expect(json.result.message).to.eql(\"Successfully registered\");\r",
+							"});\r",
+							"\r",
+							"postman.setNextRequest(\"TestRegister_DuplicatedUser\");\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/reboarding/register?userId=1&day=2020-07-11",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"reboarding",
+						"register"
+					],
+					"query": [
+						{
+							"key": "userId",
+							"value": "1"
+						},
+						{
+							"key": "day",
+							"value": "2020-07-11"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TestRegister_DuplicatedUser",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "878370d1-7da5-4ca2-80aa-97dc15f8ea6f",
+						"exec": [
+							"pm.test(\"test HttpStatus\", () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"let json = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Test isAccepted\", () => {\r",
+							"    pm.expect(json.result.status).to.eql(\"accepted\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Test message\", () => {\r",
+							"    pm.expect(json.result.message).to.eql(\"You are already registered for 2020-07-11\");\r",
+							"});\r",
+							"\r",
+							"postman.setNextRequest(\"TestRegister_OverDailyLimit\");\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/reboarding/register?userId=1&day=2020-07-11",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"reboarding",
+						"register"
+					],
+					"query": [
+						{
+							"key": "userId",
+							"value": "1"
+						},
+						{
+							"key": "day",
+							"value": "2020-07-11"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TestRegister_OverDailyLimit",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a0d5a6bc-f98a-4787-9ce9-5f092230c642",
+						"exec": [
+							"let counter = parseInt(pm.globals.get(\"registerCounter\"));\r",
+							"pm.globals.set(\"registerCounter\",counter + 1);\r",
+							"\r",
+							"if (counter < 30){\r",
+							"    postman.setNextRequest(\"TestRegister_OverDailyLimit\")\r",
+							"}else{\r",
+							"    console.log(pm.globals.get(\"registerCounter\"));\r",
+							"    let json = pm.response.json();\r",
+							"    pm.test(\"Test HttpStatus\", function () {\r",
+							"        pm.response.to.have.status(200);\r",
+							"    });\r",
+							"\r",
+							"    pm.test(\"Test isAccepted\", () => {\r",
+							"        pm.expect(json.result.status).to.eql(\"6\");\r",
+							"    });\r",
+							"    pm.globals.set(\"registerCounter\",0);\r",
+							"    postman.setNextRequest(null);\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/reboarding/register?userId={{registerCounter}}&day=2020-07-11",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"reboarding",
+						"register"
+					],
+					"query": [
+						{
+							"key": "userId",
+							"value": "{{registerCounter}}"
+						},
+						{
+							"key": "day",
+							"value": "2020-07-11"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
