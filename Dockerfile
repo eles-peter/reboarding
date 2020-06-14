@@ -1,5 +1,4 @@
 FROM maven:latest AS maven_build
-MAINTAINER Brian Hannaway
 COPY pom.xml /build/
 COPY src /build/src/
 WORKDIR /build/
