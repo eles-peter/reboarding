@@ -1,5 +1,7 @@
 package hu.csapatnev.accentureonepre.service;
 
+import hu.csapatnev.accentureonepre.dto.Query;
+import hu.csapatnev.accentureonepre.dto.Payload;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -46,29 +48,28 @@ public class ReboardingService {
         return reboardingDays;
     }
 
-    public String register(LocalDate day, long userId) {
+    public Payload register(Query requestData) {
         //TODO day validation
-        ReboardingDayData actualDayData = reboardingDays.get(day);
-        return actualDayData.register(userId);
+        ReboardingDayData actualDayData = reboardingDays.get(requestData.getDay());
+        return actualDayData.register(requestData);
     }
 
-    public String getStatus(LocalDate day, long userId) {
+    public Payload getStatus(Query requestData) {
         //TODO day validation
-        ReboardingDayData actualDayData = reboardingDays.get(day);
-        return actualDayData.getStatus(userId);
+        ReboardingDayData actualDayData = reboardingDays.get(requestData.getDay());
+        return actualDayData.getStatus(requestData);
     }
 
-    public void remove(LocalDate day, long userId) {
+    public Payload remove(Query requestData) {
         //TODO itt akarunk valamit validálni???
-        ReboardingDayData actualDayData = reboardingDays.get(day);
-        actualDayData.exit(userId);
+        ReboardingDayData actualDayData = reboardingDays.get(requestData.getDay());
+        return actualDayData.exit(requestData);
     }
 
-    public boolean entry(LocalDate day, long userId) {
+    public Payload entry(Query requestData) {
         //TODO itt akarunk valamit validálni???
-        ReboardingDayData actualDayData = reboardingDays.get(day);
-
-        return actualDayData.entry(userId);
+        ReboardingDayData actualDayData = reboardingDays.get(requestData.getDay());
+        return actualDayData.entry(requestData);
     }
 
     private int getActualDayCapacity(LocalDate actualDay) {
