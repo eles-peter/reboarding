@@ -7,9 +7,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-
 
 class ReboardingServiceTest {
 
@@ -17,8 +14,8 @@ class ReboardingServiceTest {
 
     @BeforeEach
     public void init() {
-        reboardingService = new ReboardingService();
-        reboardingService.setReboardingService(
+        reboardingService = new ReboardingService(
+                250,
                 LocalDate.of(2020,6, 30),
                 LocalDate.of(2020,7, 15),
                 LocalDate.of(2020,7, 30),
@@ -26,7 +23,6 @@ class ReboardingServiceTest {
                 LocalDate.of(2020,8, 30)
         );
     }
-
 
     @Test
     void testConstructor() {
@@ -61,7 +57,7 @@ class ReboardingServiceTest {
     void testAdd_MultipleUserSigningWithMultipleThreads() {
         List<Thread> threads = new ArrayList<>();
         LocalDate testDay = LocalDate.of(2020, 7, 1);
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 100; i++) {
             Thread worker = new Thread(new MultipleAdd(i, testDay));
             worker.start();
             threads.add(worker);
@@ -76,7 +72,7 @@ class ReboardingServiceTest {
             }
         } while (isRunning);
         int signedListLength = reboardingService.getReboardingDays().get(testDay).getSignedUserList().size();
-        Assertions.assertEquals(1000, signedListLength );
+        Assertions.assertEquals(100000, signedListLength );
     }
 
     private class MultipleAdd implements Runnable {
@@ -90,7 +86,7 @@ class ReboardingServiceTest {
 
         @Override
         public void run() {
-            for (int i = count * 100; i < (count + 1) * 100; i++) {
+            for (int i = count * 1000; i < (count + 1) * 1000; i++) {
                 reboardingService.register(testDay, i);
             }
         }

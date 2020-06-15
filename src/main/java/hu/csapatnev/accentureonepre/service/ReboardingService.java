@@ -35,25 +35,23 @@ public class ReboardingService {
 
     private Map<LocalDate, ReboardingDayData> reboardingDays;
 
+    public ReboardingService() {
+    }
+
     @PostConstruct
     public void init() {
         reboardingDays = createReboardingDays();
         System.out.println(this);
     }
 
-    public void setReboardingService() {
-        reboardingDays = createReboardingDays();
-        System.out.println(this);
-    }
-
-    public void setReboardingService(LocalDate stepTo10, LocalDate stepTo20, LocalDate stepTo30, LocalDate stepTo50, LocalDate stepTo100) {
+    public ReboardingService(int fullCapacity, LocalDate stepTo10, LocalDate stepTo20, LocalDate stepTo30, LocalDate stepTo50, LocalDate stepTo100) {
+        this.fullCapacity = fullCapacity;
         this.stepTo10 = stepTo10;
         this.stepTo20 = stepTo20;
         this.stepTo30 = stepTo30;
         this.stepTo50 = stepTo50;
         this.stepTo100 = stepTo100;
         reboardingDays = createReboardingDays();
-        System.out.println(this);
     }
 
     private Map<LocalDate, ReboardingDayData> createReboardingDays() {
@@ -106,14 +104,6 @@ public class ReboardingService {
 
     public void setReboardingDays(Map<LocalDate, ReboardingDayData> reboardingDays) {
         this.reboardingDays = reboardingDays;
-    }
-
-    public LocalDate getStepTo10() {
-        return stepTo10;
-    }
-
-    public LocalDate getStepTo100() {
-        return stepTo100;
     }
 
     @Override

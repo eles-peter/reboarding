@@ -5,11 +5,11 @@ import javax.validation.Payload;
 import java.lang.annotation.*;
 
 @Documented
-@Constraint(validatedBy = NotBeforeStep10Validator.class)
+@Constraint(validatedBy = BeforeStepTo100Validator.class)
 @Target(ElementType.PARAMETER)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface NotBeforeStep10 {
-    String message() default "is before tracked days";
+public @interface BeforeStepTo100 {
+    String message() default "is after tracked days";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 
