@@ -3,8 +3,8 @@ package hu.csapatnev.accentureonepre.controller;
 import hu.csapatnev.accentureonepre.dto.Query;
 import hu.csapatnev.accentureonepre.dto.Response;
 import hu.csapatnev.accentureonepre.service.ReboardingService;
-import hu.csapatnev.accentureonepre.validator.BeforeStep100;
-import hu.csapatnev.accentureonepre.validator.NotBeforeStep10;
+import hu.csapatnev.accentureonepre.validator.BeforeStepTo100;
+import hu.csapatnev.accentureonepre.validator.NotBeforeStepTo10;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -32,7 +32,7 @@ public class ReboardingController {
             @RequestParam("userId") Long userId,
             @RequestParam(value = "day", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-            @FutureOrPresent @NotBeforeStep10 @BeforeStep100 LocalDate day) {
+            @FutureOrPresent @NotBeforeStepTo10 @BeforeStepTo100 LocalDate day) {
         if (day == null) {
             day = LocalDate.now();
         }
@@ -46,7 +46,7 @@ public class ReboardingController {
             @RequestParam("userId") Long userId,
             @RequestParam(value = "day", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-            @FutureOrPresent @NotBeforeStep10 @BeforeStep100 LocalDate day) {
+            @FutureOrPresent @NotBeforeStepTo10 @BeforeStepTo100 LocalDate day) {
         if (day == null) {
             day = LocalDate.now();
         }

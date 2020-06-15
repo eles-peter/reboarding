@@ -1,13 +1,13 @@
 package hu.csapatnev.accentureonepre.validator;
 
+import hu.csapatnev.accentureonepre.controller.ReboardingController;
 import hu.csapatnev.accentureonepre.service.ReboardingService;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationContext;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
@@ -17,26 +17,15 @@ import java.time.LocalDate;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-public class ControllerValidatorTestWithMvc {
+@ContextConfiguration(initializers = ControllerValidatorTestContextInitializer.class)
+@WebMvcTest(ReboardingController.class)
+public class ControllerValidatorTestWithMockMvc {
 
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    private ApplicationContext applicationContext;
-
-    @BeforeEach
-    private void init() {
-        ReboardingService reboardingService = applicationContext.getBean(ReboardingService.class);
-        reboardingService.setReboardingService(
-                LocalDate.now().minusDays(30),
-                LocalDate.now().minusDays(15),
-                LocalDate.now(),
-                LocalDate.now().plusDays(15),
-                LocalDate.now().plusDays(30));
-    }
+    @MockBean
+    private ReboardingService reboardingService;
 
     @Test
     void testRegister_WithDayBeforeStep10() throws Exception {
