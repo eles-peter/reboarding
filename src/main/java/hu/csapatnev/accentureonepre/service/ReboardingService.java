@@ -2,8 +2,11 @@ package hu.csapatnev.accentureonepre.service;
 
 import hu.csapatnev.accentureonepre.dto.Query;
 import hu.csapatnev.accentureonepre.dto.Payload;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,21 +14,36 @@ import java.util.Map;
 @Service
 public class ReboardingService {
 
-    private int fullCapacity = 250;
+    @Value("${fullCapacity}")
+    private int fullCapacity;
 
-    private LocalDate stepTo10 = LocalDate.of(2020, 6,30);
-    private LocalDate stepTo20 = LocalDate.of(2020, 7,15);
-    private LocalDate stepTo30 = LocalDate.of(2020, 7,30);
-    private LocalDate stepTo50 = LocalDate.of(2020, 8,15);
-    private LocalDate stepTo100 = LocalDate.of(2020, 8,30);
+    @Value("${date.stepTo10}")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate stepTo10;
+    @Value("${date.stepTo20}")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate stepTo20;
+    @Value("${date.stepTo30}")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate stepTo30;
+    @Value("${date.stepTo50}")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate stepTo50;
+    @Value("${date.stepTo100}")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate stepTo100;
 
     private Map<LocalDate, ReboardingDayData> reboardingDays;
 
-    public ReboardingService() {
+    @PostConstruct
+    public void init() {
+        reboardingDays = createReboardingDays();
+        System.out.println(this);
     }
 
     public void setReboardingService() {
         reboardingDays = createReboardingDays();
+        System.out.println(this);
     }
 
     public void setReboardingService(LocalDate stepTo10, LocalDate stepTo20, LocalDate stepTo30, LocalDate stepTo50, LocalDate stepTo100) {
@@ -35,6 +53,7 @@ public class ReboardingService {
         this.stepTo50 = stepTo50;
         this.stepTo100 = stepTo100;
         reboardingDays = createReboardingDays();
+        System.out.println(this);
     }
 
     private Map<LocalDate, ReboardingDayData> createReboardingDays() {
@@ -48,25 +67,21 @@ public class ReboardingService {
     }
 
     public Payload register(Query requestData) {
-        //TODO day validation
         ReboardingDayData actualDayData = reboardingDays.get(requestData.getDay());
         return actualDayData.register(requestData);
     }
 
     public Payload getStatus(Query requestData) {
-        //TODO day validation
         ReboardingDayData actualDayData = reboardingDays.get(requestData.getDay());
         return actualDayData.getStatus(requestData);
     }
 
     public Payload remove(Query requestData) {
-        //TODO itt akarunk valamit validálni???
         ReboardingDayData actualDayData = reboardingDays.get(requestData.getDay());
         return actualDayData.exit(requestData);
     }
 
     public Payload entry(Query requestData) {
-        //TODO itt akarunk valamit validálni???
         ReboardingDayData actualDayData = reboardingDays.get(requestData.getDay());
         return actualDayData.entry(requestData);
     }
@@ -83,10 +98,6 @@ public class ReboardingService {
             actualDayCapacity = (int)Math.round(fullCapacity * 0.5);
         }
         return actualDayCapacity;
-    }
-
-    private void validOrThrow(int fullCapacity, LocalDate stepTo10, LocalDate stepTo20, LocalDate stepTo30, LocalDate stepTo50, LocalDate stepTo100) {
-        //TODO megírni a validálást, hogy  a napok jó sorrendben vannak-e...
     }
 
     public Map<LocalDate, ReboardingDayData> getReboardingDays() {
