@@ -6,6 +6,173 @@
 	},
 	"item": [
 		{
+			"name": " TestEntry_NotInlist",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "5fd583ff-0e5c-4adf-b303-ce8e4ccfe82b",
+						"exec": [
+							"var d = new Date(),\r",
+							"    month = '' + (d.getMonth() + 1),\r",
+							"    day = '' + d.getDate(),\r",
+							"    year = d.getFullYear();\r",
+							"\r",
+							"if (month.length < 2) \r",
+							"    month = '0' + month;\r",
+							"if (day.length < 2) \r",
+							"    day = '0' + day;\r",
+							"pm.globals.set('date',[year, month, day].join('-'))\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "d263b2ce-6ce4-48c8-b5fc-1f47651c8be7",
+						"exec": [
+							"pm.test(\"test HttpStatus\", () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"let json = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Test isAccepted\", () => {\r",
+							"    pm.expect(json.result.accepted).to.eql(false);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Test message\", () => {\r",
+							"    pm.expect(json.result.message).to.include(\"Can not enter, not signed up for\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/reboarding/entry/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"reboarding",
+						"entry",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TestExit_NotInList",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "9221159a-8830-4b87-bd4f-e18333269b33",
+						"exec": [
+							"pm.test(\"test HttpStatus\", () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"let json = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Test isAccepted\", () => {\r",
+							"    pm.expect(json.result.accepted).to.eql(false);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Test message\", () => {\r",
+							"    pm.expect(json.result.message).to.include(\"Can not exit, You are not signed up for\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/reboarding/exit/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"reboarding",
+						"exit",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TestGetStatus_NotInList",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "20e318bb-8184-4232-888a-11d54ba7cd47",
+						"exec": [
+							"pm.test(\"test HttpStatus\", () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"let json = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Test isAccepted\", () => {\r",
+							"    pm.expect(json.result.status).to.eql(\"not_signed_up\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Test message\", () => {\r",
+							"    pm.expect(json.result.message).to.include(\"You are not signed up for \");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/reboarding/status?userId=1&day={{date}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"reboarding",
+						"status"
+					],
+					"query": [
+						{
+							"key": "userId",
+							"value": "1"
+						},
+						{
+							"key": "day",
+							"value": "{{date}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "TestRegister_UnderDailyLimit",
 			"event": [
 				{
@@ -26,8 +193,6 @@
 							"pm.test(\"Test message\", () => {\r",
 							"    pm.expect(json.result.message).to.eql(\"Successfully registered\");\r",
 							"});\r",
-							"\r",
-							"postman.setNextRequest(\"TestRegister_DuplicatedUser\");\r",
 							""
 						],
 						"type": "text/javascript"
@@ -38,7 +203,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/api/reboarding/register?userId=1&day=2020-07-11",
+					"raw": "http://localhost:8080/api/reboarding/register?userId=1&day={{date}}",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -56,7 +221,7 @@
 						},
 						{
 							"key": "day",
-							"value": "2020-07-11"
+							"value": "{{date}}"
 						}
 					]
 				}
@@ -82,10 +247,8 @@
 							"\r",
 							"\r",
 							"pm.test(\"Test message\", () => {\r",
-							"    pm.expect(json.result.message).to.eql(\"You are already registered for 2020-07-11\");\r",
+							"    pm.expect(json.result.message).to.include(\"You are already registered for\");\r",
 							"});\r",
-							"\r",
-							"postman.setNextRequest(\"TestRegister_OverDailyLimit\");\r",
 							""
 						],
 						"type": "text/javascript"
@@ -96,7 +259,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/api/reboarding/register?userId=1&day=2020-07-11",
+					"raw": "http://localhost:8080/api/reboarding/register?userId=1&day={{date}}",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -114,8 +277,256 @@
 						},
 						{
 							"key": "day",
-							"value": "2020-07-11"
+							"value": "{{date}}"
 						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TestGetStatus_UnderDailyLimit",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "c7a0f84e-1b63-4906-bd80-a62d8cf26726",
+						"exec": [
+							"pm.test(\"test HttpStatus\", () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"let json = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Test isAccepted\", () => {\r",
+							"    pm.expect(json.result.status).to.eql(\"accepted\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Test message\", () => {\r",
+							"    pm.expect(json.result.message).to.eql(\"You are allowed to enter\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/reboarding/status?userId=1&day={{date}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"reboarding",
+						"status"
+					],
+					"query": [
+						{
+							"key": "userId",
+							"value": "1"
+						},
+						{
+							"key": "day",
+							"value": "{{date}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TestEntry_NotCheckedIn",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "cbd7de0f-e941-4475-9d2e-96bfbfc26b61",
+						"exec": [
+							"pm.test(\"test HttpStatus\", () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"let json = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Test isAccepted\", () => {\r",
+							"    pm.expect(json.result.accepted).to.eql(true);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Test message\", () => {\r",
+							"    pm.expect(json.result.message).to.include(\"Entry granted\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/reboarding/entry/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"reboarding",
+						"entry",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TestEntry_CheckedIn",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ad7a8ec3-88d4-40de-ae59-8413282c57aa",
+						"exec": [
+							"pm.test(\"test HttpStatus\", () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"let json = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Test isAccepted\", () => {\r",
+							"    pm.expect(json.result.accepted).to.eql(false);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Test message\", () => {\r",
+							"    pm.expect(json.result.message).to.include(\"Can not enter, you are already checked in\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/reboarding/entry/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"reboarding",
+						"entry",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TestGetStatus_CheckedIn",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "01623243-cb46-43e0-bfc0-deb4c38875fe",
+						"exec": [
+							"pm.test(\"test HttpStatus\", () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"let json = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Test isAccepted\", () => {\r",
+							"    pm.expect(json.result.status).to.eql(\"inside\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Test message\", () => {\r",
+							"    pm.expect(json.result.message).to.eql(\"You are checked in\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/reboarding/status?userId=1&day={{date}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"reboarding",
+						"status"
+					],
+					"query": [
+						{
+							"key": "userId",
+							"value": "1"
+						},
+						{
+							"key": "day",
+							"value": "{{date}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TestExit_CheckedIn",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "42140731-ccf6-457d-b218-a9feae22bfde",
+						"exec": [
+							"pm.test(\"test HttpStatus\", () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"let json = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Test isAccepted\", () => {\r",
+							"    pm.expect(json.result.accepted).to.eql(true);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Test message\", () => {\r",
+							"    pm.expect(json.result.message).to.eql(\"Successfully checked out\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/reboarding/exit/1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"reboarding",
+						"exit",
+						"1"
 					]
 				}
 			},
@@ -144,8 +555,8 @@
 							"    pm.test(\"Test isAccepted\", () => {\r",
 							"        pm.expect(json.result.status).to.eql(\"6\");\r",
 							"    });\r",
-							"    pm.globals.set(\"registerCounter\",0);\r",
-							"    postman.setNextRequest(null);\r",
+							"    pm.globals.set(\"registerCounter\",counter - 1);\r",
+							"\r",
 							"}\r",
 							""
 						],
@@ -157,7 +568,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/api/reboarding/register?userId={{registerCounter}}&day=2020-07-11",
+					"raw": "http://localhost:8080/api/reboarding/register?userId={{registerCounter}}&day={{date}}",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -175,7 +586,157 @@
 						},
 						{
 							"key": "day",
-							"value": "2020-07-11"
+							"value": "{{date}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TestEntry_OverDailyLimit",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ffec867f-9577-46ab-975f-66721b859cf5",
+						"exec": [
+							"pm.test(\"test HttpStatus\", () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"let json = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Test isAccepted\", () => {\r",
+							"    pm.expect(json.result.accepted).to.eql(false);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Test message\", () => {\r",
+							"    pm.expect(json.result.message).to.eql(\"You are in the waiting-list, your number is: 5\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/reboarding/entry/{{registerCounter}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"reboarding",
+						"entry",
+						"{{registerCounter}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TestExit_NotCheckedIn",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "e533afad-36dc-4459-ac0d-c353d0e23b89",
+						"exec": [
+							"pm.test(\"test HttpStatus\", () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"let json = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Test isAccepted\", () => {\r",
+							"    pm.expect(json.result.accepted).to.eql(false);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Test message\", () => {\r",
+							"    pm.expect(json.result.message).to.include(\"Can not exit, You are not checked in\");\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/reboarding/exit/{{registerCounter}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"reboarding",
+						"exit",
+						"{{registerCounter}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "TestGetStatus_OverDailyLimit",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "7c91e756-0c50-4891-a90c-ccdc654231b9",
+						"exec": [
+							"pm.test(\"test HttpStatus\", () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"let json = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Test isAccepted\", () => {\r",
+							"    pm.expect(json.result.status).to.eql(\"5\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							"pm.test(\"Test message\", () => {\r",
+							"    pm.expect(json.result.message).to.eql(\"Your waiting-list number is: 5\");\r",
+							"});\r",
+							"console.log(pm.globals.get(\"registerCounter\"))\r",
+							"pm.globals.set(\"registerCounter\",0);\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/api/reboarding/status?userId={{registerCounter}}&day={{date}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"reboarding",
+						"status"
+					],
+					"query": [
+						{
+							"key": "userId",
+							"value": "{{registerCounter}}"
+						},
+						{
+							"key": "day",
+							"value": "{{date}}"
 						}
 					]
 				}
