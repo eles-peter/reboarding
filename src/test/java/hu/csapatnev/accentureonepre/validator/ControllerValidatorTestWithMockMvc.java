@@ -14,7 +14,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDate;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @ContextConfiguration(initializers = ControllerValidatorTestContextInitializer.class)
@@ -33,7 +32,6 @@ public class ControllerValidatorTestWithMockMvc {
         MvcResult mvcResult = this.mockMvc.perform(MockMvcRequestBuilders.post("/api/reboarding/register").
                 param("userId", "1").
                 param("day", testDayString)).
-                andDo(print()).
                 andExpect(status().isBadRequest()).
                 andReturn();
         String mvcResponse = mvcResult.getResponse().getContentAsString();
@@ -47,7 +45,6 @@ public class ControllerValidatorTestWithMockMvc {
         MvcResult mvcResult = this.mockMvc.perform(MockMvcRequestBuilders.post("/api/reboarding/register").
                 param("userId", "1").
                 param("day", testDayString)).
-                andDo(print()).
                 andExpect(status().isBadRequest()).
                 andReturn();
         String mvcResponse = mvcResult.getResponse().getContentAsString();
@@ -61,7 +58,6 @@ public class ControllerValidatorTestWithMockMvc {
         MvcResult mvcResult = this.mockMvc.perform(MockMvcRequestBuilders.post("/api/reboarding/register").
                 param("userId", "1").
                 param("day", testDayString)).
-                andDo(print()).
                 andExpect(status().isBadRequest()).
                 andReturn();
         String mvcResponse = mvcResult.getResponse().getContentAsString();
@@ -75,7 +71,14 @@ public class ControllerValidatorTestWithMockMvc {
         this.mockMvc.perform(MockMvcRequestBuilders.post("/api/reboarding/register").
                 param("userId", "1").
                 param("day", testDayString)).
-                andDo(print()).
+                andExpect(status().isOk());
+    }
+
+    @Test
+    void testRegister_WithoutDay() throws Exception {
+        String testDayString = LocalDate.now().plusDays(1).toString();
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/api/reboarding/register").
+                param("userId", "1")).
                 andExpect(status().isOk());
     }
 
@@ -85,7 +88,6 @@ public class ControllerValidatorTestWithMockMvc {
         MvcResult mvcResult = this.mockMvc.perform(MockMvcRequestBuilders.get("/api/reboarding/status").
                 param("userId", "1").
                 param("day", testDayString)).
-                andDo(print()).
                 andExpect(status().isBadRequest()).
                 andReturn();
         String mvcResponse = mvcResult.getResponse().getContentAsString();
@@ -99,7 +101,6 @@ public class ControllerValidatorTestWithMockMvc {
         MvcResult mvcResult = this.mockMvc.perform(MockMvcRequestBuilders.get("/api/reboarding/status").
                 param("userId", "1").
                 param("day", testDayString)).
-                andDo(print()).
                 andExpect(status().isBadRequest()).
                 andReturn();
         String mvcResponse = mvcResult.getResponse().getContentAsString();
@@ -113,7 +114,6 @@ public class ControllerValidatorTestWithMockMvc {
         MvcResult mvcResult = this.mockMvc.perform(MockMvcRequestBuilders.get("/api/reboarding/status").
                 param("userId", "1").
                 param("day", testDayString)).
-                andDo(print()).
                 andExpect(status().isBadRequest()).
                 andReturn();
         String mvcResponse = mvcResult.getResponse().getContentAsString();
@@ -127,7 +127,14 @@ public class ControllerValidatorTestWithMockMvc {
         this.mockMvc.perform(MockMvcRequestBuilders.get("/api/reboarding/status").
                 param("userId", "1").
                 param("day", testDayString)).
-                andDo(print()).
+                andExpect(status().isOk());
+    }
+
+    @Test
+    void testGetStatus_WithoutDay() throws Exception {
+        String testDayString = LocalDate.now().plusDays(1).toString();
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/api/reboarding/status").
+                param("userId", "1")).
                 andExpect(status().isOk());
     }
 
