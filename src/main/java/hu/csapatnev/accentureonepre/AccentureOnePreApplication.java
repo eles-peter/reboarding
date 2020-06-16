@@ -38,10 +38,10 @@ public class AccentureOnePreApplication implements ApplicationRunner {
 
 	@Override
 	public void run(ApplicationArguments args) {
+
 		int fullCapacity = Integer.parseInt(env.getProperty("fullCapacity"));
-		if (fullCapacity < 1) {
-			throw new IllegalArgumentException("Full capacity must be positive number");
-		}
+
+		validateOrThrowFullCapacity(fullCapacity);
 
 		LocalDate stepTo10 = LocalDate.parse(env.getProperty("date.stepTo10"));
 		LocalDate stepTo20 = LocalDate.parse(env.getProperty("date.stepTo20"));
@@ -49,8 +49,7 @@ public class AccentureOnePreApplication implements ApplicationRunner {
 		LocalDate stepTo50 = LocalDate.parse(env.getProperty("date.stepTo50"));
 		LocalDate stepTo100 = LocalDate.parse(env.getProperty("date.stepTo100"));
 
-		List<LocalDate> stepsLocalDates = new ArrayList<>(Arrays.asList(stepTo10, stepTo20, stepTo30, stepTo50, stepTo100));
-		validateStepsDateOrder(stepsLocalDates);
+		validateOrThrowStepsDate(stepTo10, stepTo20, stepTo30, stepTo50, stepTo100);
 
 		String appStartInfoLog = "Application started with following parameters: " + "full capacity: " + fullCapacity +
 				", step to 10 percent: " + stepTo10 +
@@ -59,15 +58,29 @@ public class AccentureOnePreApplication implements ApplicationRunner {
 				", step to 50 percent: " + stepTo50 +
 				", step to 100 percent: " + stepTo100;
 		logger.info(appStartInfoLog);
-
 	}
 
-	private static void validateStepsDateOrder(List<LocalDate> stepsLocalDates) {
+
+	public static void validateOrThrowFullCapacity(int fullCapacity) {
+		if (fullCapacity < 1) {
+			throw new IllegalArgumentException("Full capacity must be positive number");
+		}
+	}
+
+	public static void validateOrThrowStepsDate(
+			LocalDate stepTo10, LocalDate stepTo20, LocalDate stepTo30, LocalDate stepTo50, LocalDate stepTo100) {
+
+		if (stepTo10.equals(stepTo100)) {
+			throw new IllegalArgumentException("Start date and end date can not be equals");
+		}
+
+		List<LocalDate> stepsLocalDates = new ArrayList<>(Arrays.asList(stepTo10, stepTo20, stepTo30, stepTo50, stepTo100));
 		List<LocalDate> checkList = new ArrayList<>(stepsLocalDates);
 		Collections.sort(checkList);
 		if (!stepsLocalDates.equals(checkList)) {
-			throw new IllegalArgumentException("Dates must be in order");
+			throw new IllegalArgumentException("The dates of the steps must be in chronological order");
 		}
+
 	}
 
 

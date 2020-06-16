@@ -6,7 +6,7 @@ import java.lang.annotation.*;
 
 @Documented
 @Constraint(validatedBy = BeforeStepTo100Validator.class)
-@Target(ElementType.PARAMETER)
+@Target({ElementType.PARAMETER, ElementType.LOCAL_VARIABLE, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface BeforeStepTo100 {
     String message() default "is after tracked days";

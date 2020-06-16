@@ -57,14 +57,16 @@ public class ReboardingController {
 
     @PostMapping("/entry/{userId}")
     public ResponseEntity<Response> isAccepted(@PathVariable Long userId) {
-        Query requestData = new Query(LocalDate.now(), userId);
+        LocalDate today = LocalDate.now();
+        Query requestData = new Query(today, userId);
         Response response = new Response(requestData, reboardingService.entry(requestData));
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/exit/{userId}")
     public ResponseEntity<Response> remove(@PathVariable Long userId) {
-        Query requestData = new Query(LocalDate.now(), userId);
+        LocalDate today = LocalDate.now();
+        Query requestData = new Query(today, userId);
         Response response = new Response(requestData, reboardingService.remove(requestData));
         return new ResponseEntity<>(response, HttpStatus.OK);
     }

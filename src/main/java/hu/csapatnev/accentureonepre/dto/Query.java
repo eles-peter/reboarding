@@ -4,6 +4,7 @@ package hu.csapatnev.accentureonepre.dto;
 import java.time.LocalDate;
 
 public class Query {
+
     private LocalDate day;
     private long userId;
 
