@@ -1,6 +1,6 @@
 package hu.csapatnev.accentureonepre;
 
-import hu.csapatnev.accentureonepre.config.PostmanTestContextInitializer;
+import hu.csapatnev.accentureonepre.config.ApiTestContextInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,9 +27,9 @@ public class AccentureOnePreApplication implements ApplicationRunner {
 
 	public static void main(String[] args) {
 
-		if (args.length ==1 && args[0].equals("postmanTest")) {
+		if (args.length ==1 && args[0].equals("apitest")) {
 			new SpringApplicationBuilder(AccentureOnePreApplication.class)
-					.initializers(new PostmanTestContextInitializer())
+					.initializers(new ApiTestContextInitializer())
 					.run();
 		} else {
 			SpringApplication.run(AccentureOnePreApplication.class, args);

@@ -2,7 +2,9 @@ package hu.csapatnev.accentureonepre.service;
 
 import hu.csapatnev.accentureonepre.dto.Query;
 import hu.csapatnev.accentureonepre.dto.Payload;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +15,9 @@ import java.util.Map;
 
 @Service
 public class ReboardingService {
+
+    @Autowired
+    private MessageSourceAccessor messageSourceAccessor;
 
     @Value("${fullCapacity}")
     private int fullCapacity;
@@ -41,7 +46,6 @@ public class ReboardingService {
     @PostConstruct
     public void init() {
         reboardingDays = createReboardingDays();
-        System.out.println(this);
     }
 
     public ReboardingService(int fullCapacity, LocalDate stepTo10, LocalDate stepTo20, LocalDate stepTo30, LocalDate stepTo50, LocalDate stepTo100) {
@@ -58,7 +62,7 @@ public class ReboardingService {
         Map<LocalDate, ReboardingDayData> reboardingDays = new HashMap<>();
         for (LocalDate day = stepTo10; day.isBefore(stepTo100); day = day.plusDays(1)) {
             int actualDayCapacity = getActualDayCapacity(day);
-            ReboardingDayData actualReboardingDayData = new ReboardingDayData(actualDayCapacity);
+            ReboardingDayData actualReboardingDayData = new ReboardingDayData(actualDayCapacity, messageSourceAccessor );
             reboardingDays.put(day, actualReboardingDayData);
         }
         return reboardingDays;

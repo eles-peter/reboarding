@@ -5,17 +5,21 @@ import hu.csapatnev.accentureonepre.dto.Status;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.context.support.MessageSourceAccessor;
 
 import java.time.LocalDate;
+
+import static org.mockito.Mockito.mock;
 
 class ReboardingDayDataTest {
 
     private ReboardingDayData reboardingDayData;
+    private MessageSourceAccessor messageSourceAccessorMock = mock(MessageSourceAccessor.class);
     private static final int DAILY_CAPACITY = 10;
 
     @BeforeEach
     public void init() {
-       reboardingDayData = new ReboardingDayData(DAILY_CAPACITY);
+       reboardingDayData = new ReboardingDayData(DAILY_CAPACITY, messageSourceAccessorMock);
     }
 
     @Test

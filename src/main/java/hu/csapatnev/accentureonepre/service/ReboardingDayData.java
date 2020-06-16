@@ -3,23 +3,21 @@ package hu.csapatnev.accentureonepre.service;
 import hu.csapatnev.accentureonepre.dto.Access;
 import hu.csapatnev.accentureonepre.dto.Query;
 import hu.csapatnev.accentureonepre.dto.Status;
+import org.springframework.context.support.MessageSourceAccessor;
 
-import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class ReboardingDayData {
 
+    private MessageSourceAccessor msg;
+
     private int dailyCapacity;
     private CopyOnWriteArrayList<User> signedUserList;
 
-    public ReboardingDayData(int dailyCapacity) {
+    public ReboardingDayData(int dailyCapacity, MessageSourceAccessor msg) {
+        this.msg = msg;
         this.dailyCapacity = dailyCapacity;
         signedUserList = new CopyOnWriteArrayList<>();
-    }
-
-    public ReboardingDayData(int dailyCapacity, List<User> signedUserList) {
-        this.dailyCapacity = dailyCapacity;
-        this.signedUserList = new CopyOnWriteArrayList<>(signedUserList);
     }
 
     public Status register(Query requestData) {
@@ -34,13 +32,13 @@ public class ReboardingDayData {
 
         int waitingListNumber = getWaitingListNumber(user);
         if (waitingListNumber > 0) {
-            status = new Status("" + getWaitingListNumber(user), "You are already registered for " + requestData.getDay().toString());
+            status = new Status("" + getWaitingListNumber(user), msg.getMessage("register.already", new Object[] {requestData.getDay()}));
         } else {
-            status = new Status("accepted", "You are already registered for " + requestData.getDay().toString());
+            status = new Status("accepted", msg.getMessage("register.already", new Object[] {requestData.getDay()}));
         }
 
         if (registered) {
-            status.setMessage("Successfully registered");
+            status.setMessage(msg.getMessage("register.successful"));
         }
 
         return status;
@@ -52,16 +50,17 @@ public class ReboardingDayData {
         int waitingListNumber = getWaitingListNumber(user);
 
         if (waitingListNumber == -1) {
-            status = new Status("not_signed_up", "You are not signed up for " + requestData.getDay().toString());
+            status = new Status("not_signed_up", msg.getMessage("status.notSignedUp", new Object[] {requestData.getDay()}));
         } else if (waitingListNumber == 0) {
             if (user.isCheckedIn()) {
-                status = new Status("inside", "You are checked in");
+                status = new Status("inside", msg.getMessage("status.checkedIn"));
             } else {
-                status = new Status("accepted", "You are allowed to enter");
+                status = new Status("accepted", msg.getMessage("status.accepted"));
             }
         } else {
-            status = new Status("" + waitingListNumber, "Your waiting-list number is: " + waitingListNumber);
+            status = new Status("" + waitingListNumber, msg.getMessage("status.waitingList", new Object[] {waitingListNumber}));
         }
+
         return status;
     }
 
@@ -82,11 +81,11 @@ public class ReboardingDayData {
 
         if (user != null && user.isCheckedIn()) {
             signedUserList.remove(user);
-            access = new Access(true, "Successfully checked out");
+            access = new Access(true, msg.getMessage("exit.successful"));
         } else if (user == null) {
-            access = new Access(false, "Can not exit, You are not signed up for " + requestData.getDay().toString());
+            access = new Access(false, msg.getMessage("exit.notSignedUp", new Object[] {requestData.getDay()}));
         } else {
-            access = new Access(false, "Can not exit, You are not checked in");
+            access = new Access(false, msg.getMessage("exit.notCheckedIn"));
         }
 
         return access;
@@ -102,17 +101,17 @@ public class ReboardingDayData {
                 boolean accepted = index + 1 <= dailyCapacity;
                 if (accepted) {
                     user.setCheckedIn(true);
-                    access = new Access(true, "Entry granted");
+                    access = new Access(true, msg.getMessage("entry.granted"));
                 } else {
-                    access = new Access(false, "You are in the waiting-list, your number is: " + getWaitingListNumber(user));
+                    access = new Access(false, msg.getMessage("entry.waitingList", new Object[] {getWaitingListNumber(user)}));
                 }
             } else {
-                access = new Access(false, "Can not enter, you are already checked in");
+                access = new Access(false, msg.getMessage("entry.alreadyChecked"));
             }
         } else {
-            access = new Access(false, "Can not enter, not signed up for " + requestData.getDay().toString());
-
+            access = new Access(false, msg.getMessage("entry.notSignedUp", new Object[] {requestData.getDay()}));
         }
+
         return access;
     }
 

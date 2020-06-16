@@ -23,7 +23,11 @@ public class NotBeforeStepTo10Validator implements ConstraintValidator<NotBefore
 
    @Override
    public boolean isValid(LocalDate day, ConstraintValidatorContext context) {
-      return (!day.isBefore(stepTo10));
+      if (day == null) {
+         return true;
+      } else {
+         return (!day.isBefore(stepTo10));
+      }
    }
 
    public LocalDate getStepTo10() {

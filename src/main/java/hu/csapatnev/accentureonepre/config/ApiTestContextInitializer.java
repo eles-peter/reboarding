@@ -5,7 +5,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 import java.time.LocalDate;
 
-public class PostmanTestContextInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+public class ApiTestContextInitializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 
     @Override
     public void initialize(ConfigurableApplicationContext configurableApplicationContext) {

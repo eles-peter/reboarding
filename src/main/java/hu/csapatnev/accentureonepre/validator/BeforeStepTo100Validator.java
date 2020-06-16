@@ -22,7 +22,11 @@ public class BeforeStepTo100Validator implements ConstraintValidator<BeforeStepT
 
     @Override
     public boolean isValid(LocalDate day, ConstraintValidatorContext context) {
-        return (day.isBefore(stepTo100));
+        if (day == null) {
+            return true;
+        } else {
+            return (day.isBefore(stepTo100));
+        }
     }
 
     public LocalDate getStepTo100() {
