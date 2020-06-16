@@ -5,10 +5,15 @@
       "key": "registerCounter",
       "value": "0",
       "enabled": true
+    },
+    {
+      "key": "date",
+      "value": "2020-06-15",
+      "enabled": true
     }
   ],
   "name": "My Workspace Globals",
   "_postman_variable_scope": "globals",
-  "_postman_exported_at": "2020-06-14T16:10:22.279Z",
+  "_postman_exported_at": "2020-06-15T20:18:29.586Z",
   "_postman_exported_using": "Postman/7.26.0"
 }

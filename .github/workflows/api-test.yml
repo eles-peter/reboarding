@@ -15,7 +15,7 @@ jobs:
       - name: Build docker image
         run: docker image build -t reboarding .
       - name: Run container
-        run: docker run -p 8080:8080 -d --rm --name reboarding-test reboarding
+        run: docker run -p 8080:8080 -d --rm --name reboarding-test reboarding --date.stepTo10=$(date '+%Y-%m-%d') --date.stepTo20=$(date -v+1d '+%Y-%m-%d') --date.stepTo30=$(date -v+2d '+%Y-%m-%d') --date.stepTo50=$(date -v+3d '+%Y-%m-%d') --date.stepTo100=$(date -v+4d '+%Y-%m-%d')
       # Setup test environment
       - name: Use Node.js
         uses: actions/setup-node@v1
