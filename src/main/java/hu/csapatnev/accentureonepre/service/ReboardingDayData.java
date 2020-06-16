@@ -3,6 +3,7 @@ package hu.csapatnev.accentureonepre.service;
 import hu.csapatnev.accentureonepre.dto.Access;
 import hu.csapatnev.accentureonepre.dto.Query;
 import hu.csapatnev.accentureonepre.dto.Status;
+import hu.csapatnev.accentureonepre.dto.StatusType;
 import org.springframework.context.support.MessageSourceAccessor;
 
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -32,9 +33,9 @@ public class ReboardingDayData {
 
         int waitingListNumber = getWaitingListNumber(user);
         if (waitingListNumber > 0) {
-            status = new Status("" + getWaitingListNumber(user), msg.getMessage("register.already", new Object[] {requestData.getDay()}));
+            status = new Status(getWaitingListNumber(user), msg.getMessage("register.already", new Object[] {requestData.getDay()}));
         } else {
-            status = new Status("accepted", msg.getMessage("register.already", new Object[] {requestData.getDay()}));
+            status = new Status(StatusType.ACCEPTED, msg.getMessage("register.already", new Object[] {requestData.getDay()}));
         }
 
         if (registered) {
@@ -50,15 +51,15 @@ public class ReboardingDayData {
         int waitingListNumber = getWaitingListNumber(user);
 
         if (waitingListNumber == -1) {
-            status = new Status("not_signed_up", msg.getMessage("status.notSignedUp", new Object[] {requestData.getDay()}));
+            status = new Status(StatusType.NOT_SIGNED_UP, msg.getMessage("status.notSignedUp", new Object[] {requestData.getDay()}));
         } else if (waitingListNumber == 0) {
             if (user.isCheckedIn()) {
-                status = new Status("inside", msg.getMessage("status.checkedIn"));
+                status = new Status(StatusType.INSIDE, msg.getMessage("status.checkedIn"));
             } else {
-                status = new Status("accepted", msg.getMessage("status.accepted"));
+                status = new Status(StatusType.ACCEPTED, msg.getMessage("status.accepted"));
             }
         } else {
-            status = new Status("" + waitingListNumber, msg.getMessage("status.waitingList", new Object[] {waitingListNumber}));
+            status = new Status(waitingListNumber, msg.getMessage("status.waitingList", new Object[] {waitingListNumber}));
         }
 
         return status;

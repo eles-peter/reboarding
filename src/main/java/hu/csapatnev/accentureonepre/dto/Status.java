@@ -7,8 +7,13 @@ public class Status implements Payload {
     private String status;
     private String message;
 
-    public Status(String status, String message) {
-        this.status = status;
+    public Status(StatusType status, String message) {
+        this.status = status.getDisplayName();
+        this.message = message;
+    }
+
+    public Status(int waitingListNumber, String message) {
+        this.status = Integer.toString(waitingListNumber);
         this.message = message;
     }
 
