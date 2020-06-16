@@ -20,7 +20,7 @@ public class ReboardingControllerAdvice {
     @ExceptionHandler({ ConstraintViolationException.class })
     public ResponseEntity<Object> handleConstraintViolation(ConstraintViolationException exception, WebRequest request) {
         String message = getMessage(exception.getConstraintViolations());
-        ApiError apiError =  new ApiError(HttpStatus.BAD_REQUEST, message);
+        ApiError apiError =  new ApiError(message);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiError);
     }
 

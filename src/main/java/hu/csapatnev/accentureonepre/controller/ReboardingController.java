@@ -1,6 +1,5 @@
 package hu.csapatnev.accentureonepre.controller;
 
-import hu.csapatnev.accentureonepre.dto.Payload;
 import hu.csapatnev.accentureonepre.dto.Query;
 import hu.csapatnev.accentureonepre.dto.Response;
 import hu.csapatnev.accentureonepre.exception.ApiError;
@@ -22,6 +21,8 @@ import java.time.LocalDate;
 @RequestMapping("/api/reboarding")
 public class ReboardingController {
 
+    private static final String TODAY_OUT_OF_TRACKED = "today out of tracked day";
+
     private final ReboardingService reboardingService;
 
     @Autowired
@@ -30,7 +31,7 @@ public class ReboardingController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Response> register(
+    public ResponseEntity register(
             @RequestParam("userId") Long userId,
             @RequestParam(value = "day", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
@@ -41,10 +42,13 @@ public class ReboardingController {
         Query requestData = new Query(day, userId);
         Response response = new Response(requestData, reboardingService.register(requestData));
         return new ResponseEntity<>(response, HttpStatus.OK);
+//        return response.getPayload() == null ?
+//                new ResponseEntity<>(new ApiError(TODAY_OUT_OF_TRACKED), HttpStatus.BAD_REQUEST) :
+//                new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @GetMapping("/status")
-    public ResponseEntity<Response> getStatus(
+    public ResponseEntity getStatus(
             @RequestParam("userId") Long userId,
             @RequestParam(value = "day", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
@@ -54,7 +58,9 @@ public class ReboardingController {
         }
         Query requestData = new Query(day, userId);
         Response response = new Response(requestData, reboardingService.getStatus(requestData));
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return response.getPayload() == null ?
+                new ResponseEntity<>(new ApiError(TODAY_OUT_OF_TRACKED), HttpStatus.BAD_REQUEST) :
+                new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/entry/{userId}")
@@ -63,7 +69,7 @@ public class ReboardingController {
         Query requestData = new Query(today, userId);
         Response response = new Response(requestData, reboardingService.entry(requestData));
         return response.getPayload() == null ?
-                new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "today out of tracked day"), HttpStatus.BAD_REQUEST) :
+                new ResponseEntity<>(new ApiError(TODAY_OUT_OF_TRACKED), HttpStatus.BAD_REQUEST) :
                 new ResponseEntity<>(response, HttpStatus.OK);
     }
 
@@ -73,7 +79,7 @@ public class ReboardingController {
         Query requestData = new Query(today, userId);
         Response response = new Response(requestData, reboardingService.remove(requestData));
         return response.getPayload() == null ?
-                new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "today out of tracked day"), HttpStatus.BAD_REQUEST) :
+                new ResponseEntity<>(new ApiError(TODAY_OUT_OF_TRACKED), HttpStatus.BAD_REQUEST) :
                 new ResponseEntity<>(response, HttpStatus.OK);
     }
 

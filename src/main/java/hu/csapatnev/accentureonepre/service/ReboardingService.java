@@ -71,11 +71,17 @@ public class ReboardingService {
 
     public Payload register(Query requestData) {
         ReboardingDayData actualDayData = reboardingDays.get(requestData.getDay());
+        if (actualDayData == null) {
+            return null;
+        }
         return actualDayData.register(requestData);
     }
 
     public Payload getStatus(Query requestData) {
         ReboardingDayData actualDayData = reboardingDays.get(requestData.getDay());
+        if (actualDayData == null) {
+            return null;
+        }
         return actualDayData.getStatus(requestData);
     }
 
