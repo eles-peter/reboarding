@@ -1,5 +1,6 @@
 package hu.csapatnev.accentureonepre.service;
 
+import hu.csapatnev.accentureonepre.dto.Access;
 import hu.csapatnev.accentureonepre.dto.Query;
 import hu.csapatnev.accentureonepre.dto.Payload;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,11 +81,17 @@ public class ReboardingService {
 
     public Payload remove(Query requestData) {
         ReboardingDayData actualDayData = reboardingDays.get(requestData.getDay());
+        if (actualDayData == null) {
+            return null;
+        }
         return actualDayData.exit(requestData);
     }
 
     public Payload entry(Query requestData) {
         ReboardingDayData actualDayData = reboardingDays.get(requestData.getDay());
+        if (actualDayData == null) {
+            return null;
+        }
         return actualDayData.entry(requestData);
     }
 

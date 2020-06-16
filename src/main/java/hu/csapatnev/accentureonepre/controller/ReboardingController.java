@@ -1,7 +1,9 @@
 package hu.csapatnev.accentureonepre.controller;
 
+import hu.csapatnev.accentureonepre.dto.Payload;
 import hu.csapatnev.accentureonepre.dto.Query;
 import hu.csapatnev.accentureonepre.dto.Response;
+import hu.csapatnev.accentureonepre.exception.ApiError;
 import hu.csapatnev.accentureonepre.service.ReboardingService;
 import hu.csapatnev.accentureonepre.validator.BeforeStepTo100;
 import hu.csapatnev.accentureonepre.validator.NotBeforeStepTo10;
@@ -56,19 +58,23 @@ public class ReboardingController {
     }
 
     @PostMapping("/entry/{userId}")
-    public ResponseEntity<Response> isAccepted(@PathVariable Long userId) {
-        LocalDate today = LocalDate.now();
+    public ResponseEntity isAccepted(@PathVariable Long userId) {
+        @BeforeStepTo100 @NotBeforeStepTo10 LocalDate today = LocalDate.now();
         Query requestData = new Query(today, userId);
         Response response = new Response(requestData, reboardingService.entry(requestData));
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return response.getPayload() == null ?
+                new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "today out of tracked day"), HttpStatus.BAD_REQUEST) :
+                new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @PostMapping("/exit/{userId}")
-    public ResponseEntity<Response> remove(@PathVariable Long userId) {
-        LocalDate today = LocalDate.now();
+    public ResponseEntity remove(@PathVariable Long userId) {
+        @BeforeStepTo100 @NotBeforeStepTo10 LocalDate today = LocalDate.now();
         Query requestData = new Query(today, userId);
         Response response = new Response(requestData, reboardingService.remove(requestData));
-        return new ResponseEntity<>(response, HttpStatus.OK);
+        return response.getPayload() == null ?
+                new ResponseEntity<>(new ApiError(HttpStatus.BAD_REQUEST, "today out of tracked day"), HttpStatus.BAD_REQUEST) :
+                new ResponseEntity<>(response, HttpStatus.OK);
     }
 
 }
