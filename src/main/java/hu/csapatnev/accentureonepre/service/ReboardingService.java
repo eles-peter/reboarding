@@ -1,6 +1,5 @@
 package hu.csapatnev.accentureonepre.service;
 
-import hu.csapatnev.accentureonepre.dto.Access;
 import hu.csapatnev.accentureonepre.dto.Query;
 import hu.csapatnev.accentureonepre.dto.Payload;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +18,8 @@ public class ReboardingService {
 
     @Autowired
     private MessageSourceAccessor messageSourceAccessor;
+    @Autowired
+    private VipListService vipListService;
 
     @Value("${fullCapacity}")
     private int fullCapacity;
@@ -59,11 +60,12 @@ public class ReboardingService {
         reboardingDays = createReboardingDays();
     }
 
+    //TODO átírni!!! Social distance-re!!!
     private Map<LocalDate, ReboardingDayData> createReboardingDays() {
         Map<LocalDate, ReboardingDayData> reboardingDays = new HashMap<>();
         for (LocalDate day = stepTo10; day.isBefore(stepTo100); day = day.plusDays(1)) {
             int actualDayCapacity = getActualDayCapacity(day);
-            ReboardingDayData actualReboardingDayData = new ReboardingDayData(actualDayCapacity, messageSourceAccessor );
+            ReboardingDayData actualReboardingDayData = new ReboardingDayData(actualDayCapacity, messageSourceAccessor, vipListService);
             reboardingDays.put(day, actualReboardingDayData);
         }
         return reboardingDays;
