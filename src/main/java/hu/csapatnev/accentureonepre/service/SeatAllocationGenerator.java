@@ -9,16 +9,22 @@ public class SeatAllocationGenerator {
 
         SeatAllocationGenerator seatAllocationGenerator = new SeatAllocationGenerator();
 
-        List<Point> test1 = seatAllocationGenerator.pointGeneratorIn_3_4Grid(200, 40);
+        List<Point> test1 = seatAllocationGenerator.pointGeneratorIn_3_2Grid(5, 3);
         System.out.println(test1);
-        System.out.println(test1.size());
+        List<Point> test2 = seatAllocationGenerator.pointGeneratorIn_3_4Grid(3, 3);
+//        List<Point> test2 = seatAllocationGenerator.randomPointGenerator(8000, 0, 90);
+
 
 //        List<Point> result1 = seatAllocationGenerator.bruteForceAllocationGenerator(test1, 5);
 //        System.out.println(result1);
 //        System.out.println(result1.size());
 
-        List<Point> result1 = seatAllocationGenerator.allocationGeneratorWithGraph2(test1, 5);
+
         List<Point> result2 = seatAllocationGenerator.allocationGeneratorWithGraph(test1, 5);
+        System.out.println(result2);
+        System.out.println(result2.size());
+
+//        List<Point> result4 = seatAllocationGenerator.allocationGeneratorWithGraph(test2, 5);
 
 
     }
@@ -26,17 +32,71 @@ public class SeatAllocationGenerator {
 
     //With Graph
 
-    private List<Point> allocationGeneratorWithGraph2(List<Point> centerPoints, int socDist) {
+    private List<Point> allocationGeneratorWithGraph(List<Point> centerPoints, int socDist) {
         long startTime = System.nanoTime();
-        Map<Point, List<Point>> badNeighborsGraph = createBadNeighborsGraph2(centerPoints, socDist);
 
-        long endTime   = System.nanoTime();
+        Map<Point, List<Point>> badNeighborsGraph = createBadNeighborsGraph(centerPoints, socDist);
+
+        List<Point> result = new ArrayList<>();
+        List<Point> tempResult = new ArrayList<>();
+        Point startPoint = centerPoints.get(0);
+
+        allocationGeneratorWithGraphRecursively(startPoint, badNeighborsGraph, tempResult, result, socDist);
+
+        long endTime = System.nanoTime();
         long totalTime = endTime - startTime;
-        System.out.println("allocationGeneratorWithGraph2 running time: " + totalTime / 1000000 + "millisec");
-        return null;
+        System.out.println("allocationGeneratorWithGraph running time: " + totalTime / 1000000 + "millisec");
+        System.out.println(" a maradék: " + badNeighborsGraph);
+        return result;
     }
 
-    private Map<Point, List<Point>> createBadNeighborsGraph2(List<Point> centerPoints, int socDist) {
+    private void allocationGeneratorWithGraphRecursively(Point point, Map<Point, List<Point>> badNeighborsGraph, List<Point> tempResult, List<Point> result, int socDist) {
+        tempResult.add(point);
+        if (tempResult.size() > result.size()) {
+            result.clear();
+            result.addAll(tempResult);
+        }
+
+        List<Point> badNeighbors = badNeighborsGraph.get(point);
+        if (badNeighbors == null) {
+            return;
+        }
+
+        Set<Point> closeGoodNeighbors = new HashSet<>();
+        for (Point badNeighbor : badNeighbors) {
+            List<Point> badNeighborsOfBadNeighbor = badNeighborsGraph.get(badNeighbor);
+            if (badNeighborsOfBadNeighbor != null) {
+                for (Point badNeighborOfBadNeighbor : badNeighborsOfBadNeighbor) {
+                    if (point.distance(badNeighborOfBadNeighbor) >= socDist) {
+                        closeGoodNeighbors.add(badNeighborOfBadNeighbor);
+                    }
+                }
+            }
+        }
+
+        Map<Point, List<Point>> removedGraphItems = new HashMap<>();
+        badNeighborsGraph.remove(point);
+        removedGraphItems.put(point, badNeighbors);
+        for (Point badNeighbor : badNeighbors) {
+            List<Point> badNeighborsOfBadNeighbor = badNeighborsGraph.remove(badNeighbor);
+            if (badNeighborsOfBadNeighbor != null) {
+                removedGraphItems.put(badNeighbor, badNeighborsOfBadNeighbor);
+            }
+        }
+
+
+
+        for (Point closeGoodNeighbor : closeGoodNeighbors) {
+            allocationGeneratorWithGraphRecursively(closeGoodNeighbor, badNeighborsGraph, tempResult, result, socDist);
+        }
+
+//        badNeighborsGraph.putAll(removedGraphItems);
+        tempResult.remove(point);
+
+    }
+
+
+    private Map<Point, List<Point>> createBadNeighborsGraph(List<Point> centerPoints, int socDist) {
         Map<Point, List<Point>> badNeighborsGraph = new HashMap<>();
 
         for (Point point : centerPoints) {
@@ -46,86 +106,9 @@ public class SeatAllocationGenerator {
                     .collect(Collectors.toList());
             badNeighborsGraph.put(point, badNeighbors);
         }
-
         return badNeighborsGraph;
     }
 
-    private List<Point> allocationGeneratorWithGraph(List<Point> centerPoints, int socDist) {
-        long startTime = System.nanoTime();
-        Map<Point, List<Point>> badNeighborsGraph = createBadNeighborsGraph(centerPoints, socDist);
-
-        long endTime   = System.nanoTime();
-        long totalTime = endTime - startTime;
-        System.out.println("allocationGeneratorWithGraph running time: " + totalTime / 1000000 + "millisec");
-        return null;
-    }
-
-    private Map<Point, List<Point>> createBadNeighborsGraph(List<Point> centerPoints, int socDist) {
-        Map<Point, List<Point>> badNeighborsGraph = new HashMap<>();
-        
-        List<Point> centerPointsOrderedByXCoord = centerPoints.stream()
-                .sorted(Comparator.comparing(Point::getxCoord))
-                .collect(Collectors.toList());
-        List<Point> centerPointsOrderedByYCoord = centerPoints.stream()
-                .sorted(Comparator.comparing(Point::getyCoord))
-                .collect(Collectors.toList());
-
-        for (Point point : centerPointsOrderedByXCoord) {
-            List<Point> badNeighbors = getBadNeighbors(point, centerPointsOrderedByXCoord, centerPointsOrderedByYCoord, socDist);
-            badNeighborsGraph.put(point, badNeighbors);
-        }
-        return badNeighborsGraph;
-    }
-
-    private List<Point> getBadNeighbors(Point point, List<Point> centerPointsOrderedByXCoord, List<Point> centerPointsOrderedByYCoord, int socDist) {
-
-        List<Point> subListWithXLimit = createSubListWithXLimit(point, centerPointsOrderedByXCoord, socDist);
-        List<Point> subListWithYLimit = createSubListWithYLimit(point, centerPointsOrderedByYCoord, socDist);
-
-        return subListWithXLimit.stream()
-                .filter(subListWithYLimit::contains)
-                .filter(otherPoint -> otherPoint.distance(point) < socDist)
-                .filter(otherPoint -> !otherPoint.equals(point))
-                .collect(Collectors.toList());
-    }
-
-    private List<Point> createSubListWithXLimit(Point point, List<Point> centerPointsOrderedByXCoord, int socDist) {
-        int indexXCoord = centerPointsOrderedByXCoord.indexOf(point);
-        int indexXCoordMax = centerPointsOrderedByXCoord.size();
-        int indexXCoordMin = 0;
-        for (int i = indexXCoord; i < centerPointsOrderedByXCoord.size() - indexXCoord; i++) {
-            if ((centerPointsOrderedByXCoord.get(i).getxCoord() - socDist) > point.getxCoord()) {
-                indexXCoordMax = i;
-                break;
-            }
-        }
-        for (int i = indexXCoord; i >= 0 ; i--) {
-            if ((centerPointsOrderedByXCoord.get(i).getxCoord() + socDist) < point.getxCoord()) {
-                indexXCoordMin = i;
-                break;
-            }
-        }
-        return centerPointsOrderedByXCoord.subList(indexXCoordMin + 1, indexXCoordMax);
-    }
-
-    private List<Point> createSubListWithYLimit(Point point, List<Point> centerPointsOrderedByYCoord, int socDist) {
-        int indexYCoord = centerPointsOrderedByYCoord.indexOf(point);
-        int indexYCoordMax = centerPointsOrderedByYCoord.size();
-        int indexYCoordMin = 0;
-        for (int i = indexYCoord; i < centerPointsOrderedByYCoord.size() - indexYCoord; i++) {
-            if ((centerPointsOrderedByYCoord.get(i).getyCoord() - socDist) > point.getyCoord()) {
-                indexYCoordMax = i;
-                break;
-            }
-        }
-        for (int i = indexYCoord; i >= 0 ; i--) {
-            if ((centerPointsOrderedByYCoord.get(i).getyCoord() + socDist) < point.getyCoord()) {
-                indexYCoordMin = i;
-                break;
-            }
-        }
-        return centerPointsOrderedByYCoord.subList(indexYCoordMin + 1, indexYCoordMax);
-    }
 
     //BrutForce Rekurzió
 
@@ -138,7 +121,7 @@ public class SeatAllocationGenerator {
         //TODO megírni több startpontra!!!!
         bruteForceAllocationGeneratorRecursively(startPoint, centerPoints, tempResult, result, socDist);
 
-        long endTime   = System.nanoTime();
+        long endTime = System.nanoTime();
         long totalTime = endTime - startTime;
         System.out.println("bruteForceAllocationGenerator running time: " + totalTime / 1000000 + "millisec");
 
@@ -199,8 +182,8 @@ public class SeatAllocationGenerator {
         Set<Point> randomPointSet = new HashSet<>();
         Random random = new Random();
         for (int i = 0; i < numberOfSeats; i++) {
-            int x = random.nextInt(areaEndLimit-areaStartLimit);
-            int y = random.nextInt(areaEndLimit-areaStartLimit);
+            int x = random.nextInt(areaEndLimit - areaStartLimit);
+            int y = random.nextInt(areaEndLimit - areaStartLimit);
             randomPointSet.add(new Point(areaStartLimit + x, areaStartLimit + y));
         }
         return new ArrayList<>(randomPointSet);
@@ -210,8 +193,20 @@ public class SeatAllocationGenerator {
         List<Point> pointList = new ArrayList<>();
         for (int i = 0; i < numberOfColumn; i++) {
             for (int j = 0; j < numberOfRows; j++) {
-                int x = i * 3 ;
+                int x = i * 3;
                 int y = j * 4;
+                pointList.add(new Point(x, y));
+            }
+        }
+        return pointList;
+    }
+
+    private List<Point> pointGeneratorIn_3_2Grid(int numberOfColumn, int numberOfRows) {
+        List<Point> pointList = new ArrayList<>();
+        for (int i = 0; i < numberOfColumn; i++) {
+            for (int j = 0; j < numberOfRows; j++) {
+                int x = i * 3;
+                int y = j * 2;
                 pointList.add(new Point(x, y));
             }
         }
