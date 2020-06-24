@@ -17,17 +17,17 @@ import java.util.List;
 @Service
 public class SeatService {
 
-    private List<List<Seat>> seatList = new ArrayList<>();
+    private List<List<Point>> centerPointList = new ArrayList<>();
 
     public SeatService() {
     }
 
     @PostConstruct
     public void init() {
-        getSeatsOfOpenRooms();
+        getCenterPointOfSeatsOfOpenRooms();
     }
 
-    private void getSeatsOfOpenRooms() {
+    private void getCenterPointOfSeatsOfOpenRooms() {
         File file = new File(
                 getClass().getClassLoader().getResource("seat-coordinates.json").getFile()
         );
@@ -42,7 +42,7 @@ public class SeatService {
             rooms.forEach((room) -> {
                 JSONObject jsonRoom = (JSONObject) room;
                 if ((boolean) jsonRoom.get("isOpen")) {
-                    seatList.add(parseRoom(jsonRoom));
+                    centerPointList.add(parseRoom(jsonRoom));
                 }
             });
 
@@ -51,14 +51,14 @@ public class SeatService {
         }
     }
 
-    private List<Seat> parseRoom(JSONObject room) {
+    private List<Point> parseRoom(JSONObject room) {
         JSONArray seats = (JSONArray) room.get("seats");
-        List<Seat> seatList = new ArrayList<>();
+        List<Point> pointList = new ArrayList<>();
         seats.forEach((seat) -> {
             int x = Integer.parseInt(((JSONObject) seat).get("x").toString());
             int y = Integer.parseInt(((JSONObject) seat).get("y").toString());
-            seatList.add(new Seat(x, y));
+            pointList.add(new Point(x, y));
         });
-        return seatList;
+        return pointList;
     }
 }
