@@ -26,48 +26,36 @@ public class AccentureOnePreApplication implements ApplicationRunner {
     public static void main(String[] args) {
 
         SpringApplication.run(AccentureOnePreApplication.class, args);
-
     }
 
     @Override
     public void run(ApplicationArguments args) {
 
-        int fullCapacity = Integer.parseInt(env.getProperty("fullCapacity"));
+        LocalDate stepTo5 = LocalDate.parse(env.getProperty("date.stepTo5"));
+        LocalDate stepTo4 = LocalDate.parse(env.getProperty("date.stepTo4"));
+        LocalDate stepTo3 = LocalDate.parse(env.getProperty("date.stepTo3"));
+        LocalDate stepTo2 = LocalDate.parse(env.getProperty("date.stepTo2"));
+        LocalDate stepTo1 = LocalDate.parse(env.getProperty("date.stepTo1"));
 
-        validateOrThrowFullCapacity(fullCapacity);
+        validateOrThrowStepsDate(stepTo5, stepTo4, stepTo3, stepTo2, stepTo2);
 
-        LocalDate stepTo10 = LocalDate.parse(env.getProperty("date.stepTo10"));
-        LocalDate stepTo20 = LocalDate.parse(env.getProperty("date.stepTo20"));
-        LocalDate stepTo30 = LocalDate.parse(env.getProperty("date.stepTo30"));
-        LocalDate stepTo50 = LocalDate.parse(env.getProperty("date.stepTo50"));
-        LocalDate stepTo100 = LocalDate.parse(env.getProperty("date.stepTo100"));
-
-        validateOrThrowStepsDate(stepTo10, stepTo20, stepTo30, stepTo50, stepTo100);
-
-        String appStartInfoLog = "Application started with following parameters: " + "full capacity: " + fullCapacity +
-                ", step to 10 percent: " + stepTo10 +
-                ", step to 20 percent: " + stepTo20 +
-                ", step to 30 percent: " + stepTo30 +
-                ", step to 50 percent: " + stepTo50 +
-                ", step to 100 percent: " + stepTo100;
+        String appStartInfoLog = "Application started with following parameters: " +
+                " step to 5 meter social distance: " + stepTo5 +
+                ", step to 4 meter social distance: " + stepTo4 +
+                ", step to 3 meter social distance: " + stepTo3 +
+                ", step to 2 meter social distance: " + stepTo2 +
+                ", step to 1 meter social distance: " + stepTo1;
         logger.info(appStartInfoLog);
     }
 
-
-    public static void validateOrThrowFullCapacity(int fullCapacity) {
-        if (fullCapacity < 1) {
-            throw new IllegalArgumentException("Full capacity must be positive number");
-        }
-    }
-
     public static void validateOrThrowStepsDate(
-            LocalDate stepTo10, LocalDate stepTo20, LocalDate stepTo30, LocalDate stepTo50, LocalDate stepTo100) {
+            LocalDate stepTo5, LocalDate stepTo4, LocalDate stepTo3, LocalDate stepTo2, LocalDate stepTo1) {
 
-        if (stepTo10.equals(stepTo100)) {
+        if (stepTo5.equals(stepTo1)) {
             throw new IllegalArgumentException("Start date and end date can not be equals");
         }
 
-        List<LocalDate> stepsLocalDates = new ArrayList<>(Arrays.asList(stepTo10, stepTo20, stepTo30, stepTo50, stepTo100));
+        List<LocalDate> stepsLocalDates = new ArrayList<>(Arrays.asList(stepTo5, stepTo4, stepTo3, stepTo2, stepTo1));
         List<LocalDate> checkList = new ArrayList<>(stepsLocalDates);
         Collections.sort(checkList);
         if (!stepsLocalDates.equals(checkList)) {

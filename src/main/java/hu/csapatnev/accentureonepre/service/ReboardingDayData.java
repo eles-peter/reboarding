@@ -193,5 +193,15 @@ public class ReboardingDayData {
         return access;
     }
 
+    public int getDailySocialDistance() {
+        return dailySocialDistance;
+    }
 
+    public Set<Seat> getAvailableSeats() {
+        return availableSeats;
+    }
+
+    public CopyOnWriteArrayList<User> getWaitingList() {
+        return waitingList;
+    }
 }

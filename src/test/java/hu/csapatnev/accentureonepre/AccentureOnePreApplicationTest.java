@@ -9,23 +9,6 @@ class AccentureOnePreApplicationTest {
 
     private AccentureOnePreApplication accentureOnePreApplication;
 
-    @Test
-    void TestvalidateOrThrowFullCapacity_WithValidArguments() {
-        int fullCapacity = 50;
-
-        Assertions.assertDoesNotThrow(() -> {
-            AccentureOnePreApplication.validateOrThrowFullCapacity(fullCapacity);
-        });
-    }
-
-    @Test
-    void TestvalidateOrThrowFullCapacity_WithInvalidArguments() {
-        int fullCapacity = 0;
-
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            AccentureOnePreApplication.validateOrThrowFullCapacity(fullCapacity);
-        });
-    }
 
     @Test
     void TestvalidateOrThrowStepsDate_WithValidArguments() {

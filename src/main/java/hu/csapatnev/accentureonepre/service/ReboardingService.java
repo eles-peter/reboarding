@@ -5,6 +5,7 @@ import hu.csapatnev.accentureonepre.dto.Payload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.support.MessageSourceAccessor;
+import org.springframework.expression.spel.ast.Literal;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +13,8 @@ import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ReboardingService {
@@ -20,25 +23,24 @@ public class ReboardingService {
     private MessageSourceAccessor messageSourceAccessor;
     @Autowired
     private VipListService vipListService;
+    @Autowired
+    private SeatAllocationService seatAllocationService;
 
-    @Value("${fullCapacity}")
-    private int fullCapacity;
-
-    @Value("${date.stepTo10}")
+    @Value("${date.stepTo5}")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    private LocalDate stepTo10;
-    @Value("${date.stepTo20}")
+    private LocalDate stepTo5;
+    @Value("${date.stepTo4}")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    private LocalDate stepTo20;
-    @Value("${date.stepTo30}")
+    private LocalDate stepTo4;
+    @Value("${date.stepTo3}")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    private LocalDate stepTo30;
-    @Value("${date.stepTo50}")
+    private LocalDate stepTo3;
+    @Value("${date.stepTo2}")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    private LocalDate stepTo50;
-    @Value("${date.stepTo100}")
+    private LocalDate stepTo2;
+    @Value("${date.stepTo1}")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    private LocalDate stepTo100;
+    private LocalDate stepTo1;
 
     private Map<LocalDate, ReboardingDayData> reboardingDays;
 
@@ -50,24 +52,27 @@ public class ReboardingService {
         reboardingDays = createReboardingDays();
     }
 
-    public ReboardingService(int fullCapacity, LocalDate stepTo10, LocalDate stepTo20, LocalDate stepTo30, LocalDate stepTo50, LocalDate stepTo100) {
-        this.fullCapacity = fullCapacity;
-        this.stepTo10 = stepTo10;
-        this.stepTo20 = stepTo20;
-        this.stepTo30 = stepTo30;
-        this.stepTo50 = stepTo50;
-        this.stepTo100 = stepTo100;
+    public ReboardingService(LocalDate stepTo5, LocalDate stepTo4, LocalDate stepTo3, LocalDate stepTo2, LocalDate stepTo1) {
+        this.stepTo5 = stepTo5;
+        this.stepTo4 = stepTo4;
+        this.stepTo3 = stepTo3;
+        this.stepTo2 = stepTo2;
+        this.stepTo1 = stepTo1;
         reboardingDays = createReboardingDays();
     }
 
-    //TODO átírni!!! Social distance-re!!!
     private Map<LocalDate, ReboardingDayData> createReboardingDays() {
         Map<LocalDate, ReboardingDayData> reboardingDays = new HashMap<>();
-        for (LocalDate day = stepTo10; day.isBefore(stepTo100); day = day.plusDays(1)) {
-            int actualDayCapacity = getActualDayCapacity(day);
-            ReboardingDayData actualReboardingDayData = new ReboardingDayData(actualDayCapacity, messageSourceAccessor, vipListService);
+        for (LocalDate day = stepTo5; day.isBefore(stepTo1); day = day.plusDays(1)) {
+            int dailySocialDistance = getDailySocialDistance(day);
+            Set<Point> seatAllocation = seatAllocationService.getSeatAllocation(dailySocialDistance);
+            Set<Seat> seats = seatAllocation.stream().map(Seat::new).collect(Collectors.toSet());
+            ReboardingDayData actualReboardingDayData = new ReboardingDayData(dailySocialDistance, seats, messageSourceAccessor, vipListService);
             reboardingDays.put(day, actualReboardingDayData);
         }
+        for (Map.Entry<LocalDate, ReboardingDayData> entry : reboardingDays.entrySet())
+            System.out.println(entry.getKey() +
+                    ": " + entry.getValue().getAvailableSeats().size() + " seats");
         return reboardingDays;
     }
 
@@ -103,18 +108,20 @@ public class ReboardingService {
         return actualDayData.entry(requestData);
     }
 
-    private int getActualDayCapacity(LocalDate actualDay) {
-        int actualDayCapacity;
-        if (actualDay.isBefore(stepTo20)) {
-            actualDayCapacity = (int)Math.round(fullCapacity * 0.1);
-        } else if (actualDay.isBefore(stepTo30)) {
-            actualDayCapacity = (int)Math.round(fullCapacity * 0.2);
-        } else if (actualDay.isBefore(stepTo50)) {
-            actualDayCapacity = (int) Math.round(fullCapacity * 0.3);
+    private int getDailySocialDistance(LocalDate actualDay) {
+        int dailySocialDistance;
+        if (actualDay.isBefore(stepTo4)) {
+            dailySocialDistance = 50;
+        } else if (actualDay.isBefore(stepTo3)) {
+            dailySocialDistance = 40;
+        } else if (actualDay.isBefore(stepTo2)) {
+            dailySocialDistance = 30;
+        } else if (actualDay.isBefore(stepTo1)) {
+            dailySocialDistance = 20;
         } else {
-            actualDayCapacity = (int)Math.round(fullCapacity * 0.5);
+            dailySocialDistance = 10;
         }
-        return actualDayCapacity;
+        return dailySocialDistance;
     }
 
     public Map<LocalDate, ReboardingDayData> getReboardingDays() {

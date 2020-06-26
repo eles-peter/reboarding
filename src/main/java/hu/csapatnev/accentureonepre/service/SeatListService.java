@@ -1,9 +1,12 @@
 package hu.csapatnev.accentureonepre.service;
 
+import hu.csapatnev.accentureonepre.AccentureOnePreApplication;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -15,16 +18,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class SeatService {
+public class SeatListService {
 
-    private List<List<Point>> centerPointList = new ArrayList<>();
+    private List<List<Point>> centerPointListList = new ArrayList<>();
+    private static final Logger logger = LoggerFactory.getLogger(AccentureOnePreApplication.class);
 
-    public SeatService() {
+    public SeatListService() {
     }
 
     @PostConstruct
     public void init() {
         getCenterPointOfSeatsOfOpenRooms();
+
     }
 
     private void getCenterPointOfSeatsOfOpenRooms() {
@@ -42,9 +47,11 @@ public class SeatService {
             rooms.forEach((room) -> {
                 JSONObject jsonRoom = (JSONObject) room;
                 if ((boolean) jsonRoom.get("isOpen")) {
-                    centerPointList.add(parseRoom(jsonRoom));
+                    centerPointListList.add(parseRoom(jsonRoom));
                 }
             });
+
+            logger.info("coordinates of seats have read");
 
         } catch (IOException | ParseException e) {
             e.printStackTrace();
@@ -62,7 +69,7 @@ public class SeatService {
         return pointList;
     }
 
-    public List<List<Point>> getCenterPointList() {
-        return centerPointList;
+    public List<List<Point>> getCenterPointListList() {
+        return centerPointListList;
     }
 }

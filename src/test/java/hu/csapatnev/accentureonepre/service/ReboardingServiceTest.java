@@ -25,7 +25,6 @@ class ReboardingServiceTest {
     @BeforeEach
     public void init() {
         reboardingService = new ReboardingService(
-                250,
                 LocalDate.of(2020,6, 30),
                 LocalDate.of(2020,7, 15),
                 LocalDate.of(2020,7, 30),
