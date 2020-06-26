@@ -61,4 +61,8 @@ public class SeatService {
         });
         return pointList;
     }
+
+    public List<List<Point>> getCenterPointList() {
+        return centerPointList;
+    }
 }

@@ -53,7 +53,7 @@ public class Point {
 
     @Override
     public String toString() {
-        return  "xCoord=" + xCoord +
+        return  "P: xCoord=" + xCoord +
                 ", yCoord=" + yCoord;
     }
 }
