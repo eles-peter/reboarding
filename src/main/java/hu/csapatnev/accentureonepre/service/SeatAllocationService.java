@@ -6,6 +6,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 @Service
@@ -42,16 +46,26 @@ public class SeatAllocationService {
         }
 
         Set<Point> result = new HashSet<>();
+        ExecutorService executorService = Executors.newCachedThreadPool();
+        List<Future<List<Point>>> subResultFutureList = new ArrayList<>();
 
         for (List<Point> separatedPointList : separatedPointListList) {
-            List<Point> subResult = separatedPointListAllocationGenerator(separatedPointList, socDist);
-            result.addAll(subResult);
+            Future<List<Point>> subResult = executorService.submit(new SeatAllocationGenerator(separatedPointList, socDist));
+            subResultFutureList.add(subResult);
+        }
+
+        for (Future<List<Point>>subResultFuture : subResultFutureList) {
+            try {
+                result.addAll(subResultFuture.get());
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
         }
 
         long endTime = System.nanoTime();
         long totalTimeMilliSec = (endTime - startTime) / 1000000;
         logger.info(result.size() + " seats added to seat allocation with " +
-                socDist/10 + " m social distance in " + totalTimeMilliSec + " ms");
+                socDist / 10 + " m social distance in " + totalTimeMilliSec + " ms");
         return result;
     }
 
@@ -99,101 +113,6 @@ public class SeatAllocationService {
                 }
             }
         }
-    }
-
-
-    private List<Point> separatedPointListAllocationGenerator(List<Point> separatedPointList, int socDist) {
-        Map<Point, List<Point>> godNeighborsGraph = createGodNeighborsGraph(separatedPointList, socDist);
-        return getBiggestMaximalCliques(godNeighborsGraph);
-    }
-
-    private Map<Point, List<Point>> createGodNeighborsGraph(List<Point> pointList, int socDist) {
-        Map<Point, List<Point>> godNeighborsGraph = new HashMap<>();
-
-        for (Point point : pointList) {
-            List<Point> badNeighbors = pointList.stream()
-                    .filter(otherPoint -> otherPoint.distance(point) >= socDist)
-                    .collect(Collectors.toList());
-            godNeighborsGraph.put(point, badNeighbors);
-        }
-        return godNeighborsGraph;
-    }
-
-    public List<Point> getBiggestMaximalCliques(Map<Point, List<Point>> godNeighborsGraph) {
-
-        List<Set<Point>> cliques = getAllMaximalCliques(godNeighborsGraph);
-
-        int maximum = 0;
-        Set<Point> biggestClique = new HashSet<>();
-        for (Set<Point> clique : cliques) {
-            if (maximum < clique.size()) {
-                maximum = clique.size();
-                biggestClique = clique;
-            }
-        }
-        return new ArrayList<>(biggestClique);
-    }
-
-    public List<Set<Point>> getAllMaximalCliques(Map<Point, List<Point>> godNeighborsGraph) {
-
-        List<Set<Point>> cliques = new ArrayList<>();
-        List<Point> potentialClique = new ArrayList<>();
-        List<Point> alreadyFound = new ArrayList<>();
-        List<Point> candidates = new ArrayList<>(godNeighborsGraph.keySet());
-
-        findCliques(potentialClique, candidates, alreadyFound, cliques, godNeighborsGraph);
-
-        return cliques;
-    }
-
-    private void findCliques(List<Point> potentialClique, List<Point> candidates, List<Point> alreadyFound, List<Set<Point>> cliques, Map<Point, List<Point>> godNeighborsGraph) {
-
-        List<Point> candidatesArray = new ArrayList<>(candidates);
-        if (!isEnd(candidates, alreadyFound, godNeighborsGraph)) {
-            for (Point candidate : candidatesArray) {
-                List<Point> newCandidates = new ArrayList<>();
-                List<Point> newAlreadyFound = new ArrayList<>();
-
-                potentialClique.add(candidate);
-                candidates.remove(candidate);
-
-                for (Point new_candidate : candidates) {
-                    if (godNeighborsGraph.get(candidate).contains(new_candidate)) {
-                        newCandidates.add(new_candidate);
-                    }
-                }
-                for (Point new_found : alreadyFound) {
-                    if (godNeighborsGraph.get(candidate).contains(new_found)) {
-                        newAlreadyFound.add(new_found);
-                    }
-                }
-                if (newCandidates.isEmpty() && newAlreadyFound.isEmpty()) {
-                    cliques.add(new HashSet<>(potentialClique));
-                }
-                else {
-                    findCliques(potentialClique, newCandidates, newAlreadyFound, cliques, godNeighborsGraph);
-                }
-                alreadyFound.add(candidate);
-                potentialClique.remove(candidate);
-            }
-        }
-    }
-
-    private boolean isEnd(List<Point> candidates, List<Point> alreadyFound, Map<Point, List<Point>> godNeighborsGraph) {
-        boolean isEnd = false;
-        int edgeCounter;
-        for (Point found : alreadyFound) {
-            edgeCounter = 0;
-            for (Point candidate : candidates) {
-                if (godNeighborsGraph.get(found).contains(candidate)) {
-                    edgeCounter++;
-                }
-            }
-            if (edgeCounter == candidates.size()) {
-                isEnd = true;
-            }
-        }
-        return isEnd;
     }
 
 
