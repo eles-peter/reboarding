@@ -51,7 +51,7 @@ public class SeatListService {
                 }
             });
 
-            logger.info("coordinates of seats have read");
+            logger.info("coordinates of seats loaded");
 
         } catch (IOException | ParseException e) {
             e.printStackTrace();
@@ -69,7 +69,11 @@ public class SeatListService {
         return pointList;
     }
 
-    public List<List<Point>> getCenterPointListList() {
-        return centerPointListList;
+    public List<List<Point>> getCopyOfCenterPointListList() {
+        List<List<Point>> CopyOfCenterPointListList = new ArrayList<>();
+        for (List<Point>centerPointList : this.centerPointListList) {
+            CopyOfCenterPointListList.add(new ArrayList<>(centerPointList));
+        }
+        return CopyOfCenterPointListList;
     }
 }

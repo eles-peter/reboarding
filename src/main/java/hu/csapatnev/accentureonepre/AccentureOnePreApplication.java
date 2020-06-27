@@ -36,26 +36,28 @@ public class AccentureOnePreApplication implements ApplicationRunner {
         LocalDate stepTo3 = LocalDate.parse(env.getProperty("date.stepTo3"));
         LocalDate stepTo2 = LocalDate.parse(env.getProperty("date.stepTo2"));
         LocalDate stepTo1 = LocalDate.parse(env.getProperty("date.stepTo1"));
+        LocalDate endOfPeriod = LocalDate.parse(env.getProperty("date.endOfPeriod"));
 
-        validateOrThrowStepsDate(stepTo5, stepTo4, stepTo3, stepTo2, stepTo2);
+        validateOrThrowStepsDate(stepTo5, stepTo4, stepTo3, stepTo2, stepTo1, endOfPeriod);
 
         String appStartInfoLog = "Application started with following parameters: " +
                 " step to 5 meter social distance: " + stepTo5 +
                 ", step to 4 meter social distance: " + stepTo4 +
                 ", step to 3 meter social distance: " + stepTo3 +
                 ", step to 2 meter social distance: " + stepTo2 +
-                ", step to 1 meter social distance: " + stepTo1;
+                ", step to 1 meter social distance: " + stepTo1 +
+                ", end of the period: " + endOfPeriod;
         logger.info(appStartInfoLog);
     }
 
     public static void validateOrThrowStepsDate(
-            LocalDate stepTo5, LocalDate stepTo4, LocalDate stepTo3, LocalDate stepTo2, LocalDate stepTo1) {
+            LocalDate stepTo5, LocalDate stepTo4, LocalDate stepTo3, LocalDate stepTo2, LocalDate stepTo1, LocalDate endOfPeriod) {
 
-        if (stepTo5.equals(stepTo1)) {
+        if (stepTo5.equals(endOfPeriod)) {
             throw new IllegalArgumentException("Start date and end date can not be equals");
         }
 
-        List<LocalDate> stepsLocalDates = new ArrayList<>(Arrays.asList(stepTo5, stepTo4, stepTo3, stepTo2, stepTo1));
+        List<LocalDate> stepsLocalDates = new ArrayList<>(Arrays.asList(stepTo5, stepTo4, stepTo3, stepTo2, stepTo1, endOfPeriod));
         List<LocalDate> checkList = new ArrayList<>(stepsLocalDates);
         Collections.sort(checkList);
         if (!stepsLocalDates.equals(checkList)) {

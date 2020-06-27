@@ -22,12 +22,9 @@ public class SeatAllocationService {
     }
 
     public Set<Point> getSeatAllocation(int socDist) {
-        Set<Point> seatAllocation = null;
-        seatAllocation = seatAllocationList.get(socDist);
-        System.out.println(socDist + " - seatAllocation=" + seatAllocation);
+        Set<Point> seatAllocation = seatAllocationList.get(socDist);
         if (seatAllocation == null) {
-            List<List<Point>> centerPointListList = List.copyOf(seatListService.getCenterPointListList());
-            System.out.println("centerPointListList.size: " + centerPointListList.size());
+            List<List<Point>> centerPointListList = seatListService.getCopyOfCenterPointListList();
             seatAllocation = createSeatAllocation(centerPointListList, socDist);
             seatAllocationList.put(socDist, seatAllocation);
         }
@@ -35,6 +32,7 @@ public class SeatAllocationService {
     }
 
     private Set<Point> createSeatAllocation(List<List<Point>> centerPointListList, int socDist) {
+        long startTime = System.nanoTime();
 
         List<List<Point>> separatedPointListList = new ArrayList<>();
 
@@ -49,7 +47,11 @@ public class SeatAllocationService {
             List<Point> subResult = separatedPointListAllocationGenerator(separatedPointList, socDist);
             result.addAll(subResult);
         }
-        logger.info("generated seat allocation to " + socDist/10 + "m social distance, number of seats: " + result.size());
+
+        long endTime = System.nanoTime();
+        long totalTimeMilliSec = (endTime - startTime) / 1000000;
+        logger.info(result.size() + " seats added to seat allocation with " +
+                socDist/10 + " m social distance in " + totalTimeMilliSec + " ms");
         return result;
     }
 

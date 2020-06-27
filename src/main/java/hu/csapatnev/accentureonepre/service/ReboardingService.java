@@ -5,7 +5,6 @@ import hu.csapatnev.accentureonepre.dto.Payload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.support.MessageSourceAccessor;
-import org.springframework.expression.spel.ast.Literal;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +40,9 @@ public class ReboardingService {
     @Value("${date.stepTo1}")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate stepTo1;
+    @Value("${date.endOfPeriod}")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    private LocalDate endOfPeriod;
 
     private Map<LocalDate, ReboardingDayData> reboardingDays;
 
@@ -63,16 +65,13 @@ public class ReboardingService {
 
     private Map<LocalDate, ReboardingDayData> createReboardingDays() {
         Map<LocalDate, ReboardingDayData> reboardingDays = new HashMap<>();
-        for (LocalDate day = stepTo5; day.isBefore(stepTo1); day = day.plusDays(1)) {
+        for (LocalDate day = stepTo5; day.isBefore(endOfPeriod); day = day.plusDays(1)) {
             int dailySocialDistance = getDailySocialDistance(day);
             Set<Point> seatAllocation = seatAllocationService.getSeatAllocation(dailySocialDistance);
             Set<Seat> seats = seatAllocation.stream().map(Seat::new).collect(Collectors.toSet());
             ReboardingDayData actualReboardingDayData = new ReboardingDayData(dailySocialDistance, seats, messageSourceAccessor, vipListService);
             reboardingDays.put(day, actualReboardingDayData);
         }
-        for (Map.Entry<LocalDate, ReboardingDayData> entry : reboardingDays.entrySet())
-            System.out.println(entry.getKey() +
-                    ": " + entry.getValue().getAvailableSeats().size() + " seats");
         return reboardingDays;
     }
 
