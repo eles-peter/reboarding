@@ -6,10 +6,12 @@ import com.fasterxml.jackson.annotation.JsonTypeName;
 public class Status implements Payload {
     private String status;
     private String message;
+    private String imageUrl;
 
-    public Status(StatusType status, String message) {
+    public Status(StatusType status, String message, String imageUrl) {
         this.status = status.getDisplayName();
         this.message = message;
+        this.imageUrl = imageUrl;
     }
 
     public Status(int waitingListNumber, String message) {
@@ -31,5 +33,13 @@ public class Status implements Payload {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

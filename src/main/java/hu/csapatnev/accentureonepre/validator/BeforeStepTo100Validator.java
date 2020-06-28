@@ -9,7 +9,7 @@ import java.time.LocalDate;
 
 public class BeforeStepTo100Validator implements ConstraintValidator<BeforeStepTo100, LocalDate> {
 
-    @Value("${date.stepTo100}")
+    @Value("${date.stepTo1}")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate stepTo100;
 

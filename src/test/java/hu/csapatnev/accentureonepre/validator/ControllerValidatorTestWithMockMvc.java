@@ -33,7 +33,7 @@ public class ControllerValidatorTestWithMockMvc {
 
     @BeforeEach
     public void init() {
-        mockStatusResponse = new Status(StatusType.ACCEPTED, "accepted");
+        mockStatusResponse = new Status(StatusType.ACCEPTED, "accepted", null);
     }
 
     @Test
