@@ -125,6 +125,14 @@ public class ReboardingService {
         return dailySocialDistance;
     }
 
+    public byte[] getLayout(Query requestData) {
+        ReboardingDayData actualDayData = reboardingDays.get(requestData.getDay());
+        if (actualDayData == null) {
+            return null;
+        }
+        return actualDayData.getImage(requestData);
+    }
+
     public Map<LocalDate, ReboardingDayData> getReboardingDays() {
         return reboardingDays;
     }
@@ -147,4 +155,6 @@ public class ReboardingService {
 
         return reboardingScheduleToString.toString();
     }
+
+
 }
