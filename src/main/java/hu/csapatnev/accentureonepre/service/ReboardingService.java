@@ -54,12 +54,14 @@ public class ReboardingService {
         reboardingDays = createReboardingDays();
     }
 
-    public ReboardingService(LocalDate stepTo5, LocalDate stepTo4, LocalDate stepTo3, LocalDate stepTo2, LocalDate stepTo1) {
+    public ReboardingService(LocalDate stepTo5, LocalDate stepTo4, LocalDate stepTo3, LocalDate stepTo2, LocalDate stepTo1, LocalDate endOfPeriod, SeatAllocationService seatAllocationService) {
         this.stepTo5 = stepTo5;
         this.stepTo4 = stepTo4;
         this.stepTo3 = stepTo3;
         this.stepTo2 = stepTo2;
         this.stepTo1 = stepTo1;
+        this.endOfPeriod = endOfPeriod;
+        this.seatAllocationService = seatAllocationService;
         reboardingDays = createReboardingDays();
     }
 
@@ -134,11 +136,15 @@ public class ReboardingService {
     @Override
     public String toString() {
         StringBuilder reboardingScheduleToString = new StringBuilder();
-        for (Map.Entry<LocalDate, ReboardingDayData> entry : reboardingDays.entrySet()) {
-            reboardingScheduleToString.append(entry.getKey()).append(" : ");
-            reboardingScheduleToString.append(entry.getValue().toString());
-            reboardingScheduleToString.append("\n");
-        }
+        if (reboardingDays != null) {
+            for (Map.Entry<LocalDate, ReboardingDayData> entry : reboardingDays.entrySet()) {
+                reboardingScheduleToString.append(entry.getKey()).append(" : ");
+                reboardingScheduleToString.append(entry.getValue().toString());
+                reboardingScheduleToString.append("\n");
+            }
+        } else {
+            reboardingScheduleToString.append("null");        }
+
         return reboardingScheduleToString.toString();
     }
 }

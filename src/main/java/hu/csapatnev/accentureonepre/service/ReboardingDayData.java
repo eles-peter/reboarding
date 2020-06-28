@@ -204,4 +204,13 @@ public class ReboardingDayData {
     public CopyOnWriteArrayList<User> getWaitingList() {
         return waitingList;
     }
+
+    @Override
+    public String toString() {
+        return "ReboardingDayData{" +
+                "dailySocialDistance=" + dailySocialDistance +
+                ", availableSeats=" + availableSeats +
+                ", waitingList=" + waitingList +
+                '}';
+    }
 }
