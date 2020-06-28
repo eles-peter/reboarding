@@ -6,9 +6,9 @@ import java.time.LocalDate;
 public class Query {
 
     private LocalDate day;
-    private long userId;
+    private Long userId;
 
-    public Query(LocalDate day, long userId) {
+    public Query(LocalDate day, Long userId) {
         this.day = day;
         this.userId = userId;
     }
@@ -17,7 +17,7 @@ public class Query {
         return day;
     }
 
-    public long getUserId() {
+    public Long getUserId() {
         return userId;
     }
 }

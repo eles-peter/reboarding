@@ -58,7 +58,7 @@ class ReboardingServiceTest {
     @Test
     void testRegister() {
         Query requestData = new Query(TEST_DAY, TEST_USER);
-        Status responseStatus = new Status(StatusType.ACCEPTED, "Successfully registered");
+        Status responseStatus = new Status(StatusType.ACCEPTED, "Successfully registered", null);
         when(reboardingDayDataMock.register(requestData)).thenReturn(responseStatus);
 
         Status response = (Status) reboardingService.register(requestData);
@@ -70,7 +70,7 @@ class ReboardingServiceTest {
     @Test
     void testGetStatus() {
         Query requestData = new Query(TEST_DAY, TEST_USER);
-        Status responseStatus = new Status(StatusType.ACCEPTED, "You are allowed to enter");
+        Status responseStatus = new Status(StatusType.ACCEPTED, "You are allowed to enter", null);
         when(reboardingDayDataMock.getStatus(requestData)).thenReturn(responseStatus);
 
         Status response = (Status) reboardingService.getStatus(requestData);

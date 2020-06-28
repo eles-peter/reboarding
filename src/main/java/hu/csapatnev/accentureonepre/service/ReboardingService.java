@@ -123,12 +123,12 @@ public class ReboardingService {
         return dailySocialDistance;
     }
 
-    public byte[] getLayout(LocalDate day) {
-        ReboardingDayData actualDayData = reboardingDays.get(day);
+    public byte[] getLayout(Query requestData) {
+        ReboardingDayData actualDayData = reboardingDays.get(requestData.getDay());
         if (actualDayData == null) {
             return null;
         }
-        return actualDayData.getImage();
+        return actualDayData.getImage(requestData);
     }
 
     public Map<LocalDate, ReboardingDayData> getReboardingDays() {

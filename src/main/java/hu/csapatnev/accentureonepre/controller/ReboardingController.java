@@ -86,13 +86,17 @@ public class ReboardingController {
     @GetMapping(value = "/layout", produces = "image/jpg")
     public @ResponseBody
     byte[] getLayout(
+            @RequestParam(value = "userId", required = false) Long userId,
             @RequestParam(value = "day", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
             @FutureOrPresent @NotBeforeStepTo10 @BeforeStepTo100 LocalDate day) {
         if (day == null) {
             day = LocalDate.now();
         }
-        byte[] image = reboardingService.getLayout(day);
+
+        Query requestData = new Query(day, userId);
+
+        byte[] image = reboardingService.getLayout(requestData);
 
         return image;
     }

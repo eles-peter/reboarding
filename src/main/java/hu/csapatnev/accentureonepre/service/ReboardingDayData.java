@@ -49,10 +49,10 @@ public class ReboardingDayData {
 
         if (vipListService.isContains(userId)) {
             //VIP user
-            status = new Status(StatusType.ACCEPTED, msg.getMessage("register.vip", new Object[]{requestData.getDay()}));
-        } else if (getRegisteredSeat(userId) != null) {
+            status = new Status(StatusType.ACCEPTED, msg.getMessage("register.vip", new Object[]{requestData.getDay()}), null);
+        } else if (findSeatByUserId(userId) != null) {
             //regisztrált már, van széke?
-            status = new Status(StatusType.ACCEPTED, msg.getMessage("register.already", new Object[]{requestData.getDay()}));
+            status = new Status(StatusType.ACCEPTED, msg.getMessage("register.already", new Object[]{requestData.getDay()}), getLayoutUrl(requestData));
         } else if (getWaitingListNumber(userId) > 0) {
             //regisztrált már, várólistán van?
             status = new Status(getWaitingListNumber(userId), msg.getMessage("register.already", new Object[]{requestData.getDay()}));
@@ -61,7 +61,7 @@ public class ReboardingDayData {
             boolean isSeatReservationSuccessful = reserveSeat(user);
             if (isSeatReservationSuccessful) {
                 //sikerült beregisztrálni üres székre?
-                status = new Status(StatusType.ACCEPTED, msg.getMessage("register.successful"));
+                status = new Status(StatusType.ACCEPTED, msg.getMessage("register.successful"), getLayoutUrl(requestData));
             } else {
                 //nincs már üres szék, várólistára rakni...
                 waitingList.add(user);
@@ -85,12 +85,12 @@ public class ReboardingDayData {
         return isSeatReservationSuccessful;
     }
 
-    private Seat getRegisteredSeat(long userId) {
+    private Seat findSeatByUserId(Long userId) {
         Seat result = null;
         Iterator<Seat> seatIterator = availableSeats.iterator();
         while (seatIterator.hasNext()) {
             Seat seat = seatIterator.next();
-            if (userId == seat.getUser().getId()) {
+            if (seat.getUser() != null && userId == seat.getUser().getId()) {
                 result = seat;
                 break;
             }
@@ -114,7 +114,7 @@ public class ReboardingDayData {
         Iterator<Seat> seatIterator = availableSeats.iterator();
         while (seatIterator.hasNext()) {
             Seat seat = seatIterator.next();
-            if (userId == seat.getUser().getId()) {
+            if (seat.getUser() != null && userId == seat.getUser().getId()) {
                 user = seat.getUser();
                 break;
             }
@@ -128,14 +128,14 @@ public class ReboardingDayData {
 
         if (vipListService.isContains(userId)) {
             //VIP user
-            status = new Status(StatusType.ACCEPTED, msg.getMessage("status.vip"));
-        } else if (getRegisteredSeat(userId) != null) {
+            status = new Status(StatusType.ACCEPTED, msg.getMessage("status.vip"), null);
+        } else if (findSeatByUserId(userId) != null) {
             //regisztrált már, van széke?
             User user = findUserById(userId);
             if (user.isCheckedIn()) {
-                status = new Status(StatusType.INSIDE, msg.getMessage("status.checkedIn"));
+                status = new Status(StatusType.INSIDE, msg.getMessage("status.checkedIn"), getLayoutUrl(requestData));
             } else {
-                status = new Status(StatusType.ACCEPTED, msg.getMessage("status.accepted"));
+                status = new Status(StatusType.ACCEPTED, msg.getMessage("status.accepted"), getLayoutUrl(requestData));
             }
         } else if (getWaitingListNumber(userId) > 0) {
             //regisztrált már, várólistán van?
@@ -144,10 +144,14 @@ public class ReboardingDayData {
 
         } else {
             //még nem regisztrált
-            status = new Status(StatusType.NOT_SIGNED_UP, msg.getMessage("status.notSignedUp", new Object[]{requestData.getDay()}));
+            status = new Status(StatusType.NOT_SIGNED_UP, msg.getMessage("status.notSignedUp", new Object[]{requestData.getDay()}), null);
         }
 
         return status;
+    }
+
+    public String getLayoutUrl(Query query) {
+        return "/api/reboarding/layout?day=" + query.getDay() + "&userId=" + query.getUserId();
     }
 
     public Access exit(Query requestData) {
@@ -157,9 +161,9 @@ public class ReboardingDayData {
 
         // ha VIP, akkor ne csináljon semmit????
 
-        if (user != null && user.isCheckedIn() && getRegisteredSeat(userId) != null) {
+        if (user != null && user.isCheckedIn() && findSeatByUserId(userId) != null) {
             access = new Access(true, msg.getMessage("exit.successful"));
-            Seat seat = getRegisteredSeat(userId);
+            Seat seat = findSeatByUserId(userId);
             seat.setUser(null);
 
             //Én ezeket hagynám a picsába....
@@ -179,7 +183,7 @@ public class ReboardingDayData {
         if (vipListService.isContains(userId)) {
             //VIP user
             access= new Access(true, msg.getMessage("entry.vip"));
-        } else if (getRegisteredSeat(userId) != null) {
+        } else if (findSeatByUserId(userId) != null) {
             //regisztrált már, van széke?
             User user = findUserById(userId);
             if (user.isCheckedIn()) {
@@ -200,7 +204,7 @@ public class ReboardingDayData {
         return access;
     }
 
-    public byte[] getImage(){
+    public byte[] getImage(Query requestData){
         ByteArrayOutputStream bao = new ByteArrayOutputStream();
         try {
             File file = new File(
@@ -210,22 +214,40 @@ public class ReboardingDayData {
             Graphics2D graphics = (Graphics2D) bufferedImage.getGraphics();
             graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-                for (Seat seat : availableSeats
-                ) {
+            if (requestData.getUserId() != null) {
+                Status status = getStatus(requestData);
+
+                if (!status.getStatus().equals(StatusType.NOT_SIGNED_UP.getDisplayName())) {
+                    Seat seat = findSeatByUserId(requestData.getUserId());
+
+                    graphics.setColor(Color.GREEN);
+                    int radius = 7;
+                    Shape circle = new Ellipse2D.Double(
+                            seat.getCenter().getxCoord() - radius,
+                            seat.getCenter().getyCoord() - radius,
+                            2.0 * radius,
+                            2.0 * radius
+                    );
+                    graphics.fill(circle);
+                }
+
+            } else {
+                for (Seat seat : availableSeats) {
                     Color color = getColor(seat.getUser());
-                    // graphics.setStroke(new BasicStroke(5));
                     graphics.setColor(color);
                     int radius = 5;
                     Shape circle = new Ellipse2D.Double(seat.getCenter().getxCoord() - radius, seat.getCenter().getyCoord() - radius, 2.0 * radius, 2.0 * radius);
                     graphics.fill(circle);
                 }
 
-                ImageIO.write(bufferedImage,"jpg",bao);
+            }
+
+            ImageIO.write(bufferedImage,"jpg",bao);
         } catch (IOException | NullPointerException e) {
             e.printStackTrace();
         }
-        return bao.toByteArray();
 
+        return bao.toByteArray();
     }
 
     private Color getColor(User user) {
