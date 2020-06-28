@@ -9,7 +9,7 @@ import java.time.LocalDate;
 
 public class NotBeforeStepTo10Validator implements ConstraintValidator<NotBeforeStepTo10, LocalDate> {
 
-   @Value("${date.stepTo10}")
+   @Value("${date.stepTo5}")
    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
    private LocalDate stepTo10;
 

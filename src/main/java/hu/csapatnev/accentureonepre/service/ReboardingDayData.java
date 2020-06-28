@@ -6,6 +6,13 @@ import hu.csapatnev.accentureonepre.dto.Status;
 import hu.csapatnev.accentureonepre.dto.StatusType;
 import org.springframework.context.support.MessageSourceAccessor;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.geom.Ellipse2D;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -191,6 +198,46 @@ public class ReboardingDayData {
             access = new Access(false, msg.getMessage("entry.notSignedUp", new Object[]{requestData.getDay()}));
         }
         return access;
+    }
+
+    public byte[] getImage(){
+        ByteArrayOutputStream bao = new ByteArrayOutputStream();
+        try {
+            File file = new File(
+                    getClass().getClassLoader().getResource("office_map.jpg").getFile()
+            );
+            BufferedImage bufferedImage = ImageIO.read(file);
+            Graphics2D graphics = (Graphics2D) bufferedImage.getGraphics();
+            graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+
+                for (Seat seat : availableSeats
+                ) {
+                    Color color = getColor(seat.getUser());
+                    // graphics.setStroke(new BasicStroke(5));
+                    graphics.setColor(color);
+                    int radius = 5;
+                    Shape circle = new Ellipse2D.Double(seat.getCenter().getxCoord() - radius, seat.getCenter().getyCoord() - radius, 2.0 * radius, 2.0 * radius);
+                    graphics.fill(circle);
+                }
+
+                ImageIO.write(bufferedImage,"jpg",bao);
+        } catch (IOException | NullPointerException e) {
+            e.printStackTrace();
+        }
+        return bao.toByteArray();
+
+    }
+
+    private Color getColor(User user) {
+        Color color;
+        if (user == null){
+            color = Color.GREEN;
+        }else if (user.isCheckedIn()){
+            color = Color.RED;
+        }else {
+            color = Color.YELLOW;
+        }
+        return color;
     }
 
     public int getDailySocialDistance() {
