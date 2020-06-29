@@ -1,5 +1,5 @@
 # Reboarding to the office
-Accenture competition first round
+Accenture competition second round
 
 ## Running in docker
 Build the image:  
@@ -8,16 +8,24 @@ Build the image:
 Run the docker image:  
 `docker run -p 8080:8080 -d reboarding [ARGS]`
 
-To start the application basic configuration shall be provided. This includes the offices full capacity, and the dates
-where the number of people who can enter increases. These dates provided in the following format: 'YYYY-MM-DD'.
+To start the application basic configuration shall be provided. This includes the dates where the required distance 
+between reservable seats decreases. These dates provided in the following format: 'YYYY-MM-DD'. Image file of the 
+office layout are stored in the resources. Seat coordinates mapped in advance by hand and stored in 
+`seat-coordinates.json`.
 
 **List of arguments:**  
---date.stepTo10  
---date.stepTo20  
---date.stepTo30  
---date.stepTo50  
---date.stepTo100  
---fullCapacity
+--date.stepTo1  
+--date.stepTo2  
+--date.stepTo3  
+--date.stepTo5  
+--date.endOfPeriod 
+--numberInWaitnigListBeforeNotification
+
+## Distribute seats
+To pack the most people to the office with the given distance criteria, the problem can be represented as a graph. 
+The nodes are connected when they are further apart from each other than the given distance. The graphs maximal clique 
+is when the most seats can be reserved, and they all compile to the rules. This is find by an implementation of the
+Bron-Kerbosch algorithm. With this approach the application finds the optimal seating distribution in about 2 minutes.
 
 ## Testing locally
 
@@ -36,8 +44,7 @@ newman run postman/postman_collection.json -g postman/postman_globals.json
 
 ## CI/CD
 
-Github actions are defined to build the application, run unit tests and API tests and build a docker image. After every
-commit or pull request to master these are run automatically. Pushing the docker image is yet to be implemented.
+Unit tests and build run by Github Action, after every commit or pull request to master.
 
 ## Endpoints
 
@@ -47,4 +54,7 @@ POST | /api/reboarding/register?userId={userId}&day={day} | Register a user to a
 POST | /api/reboarding/entry/{userId} | Check in a user for today
 POST | /api/reboarding/exit/{userId} | Check out a user for today
 GET | /api/reboarding/status?userId={userId}&day={day} | Get the status of the user for a given day
+GET | /api/reboarding/layout?day={day} | Get the status of all seats for a given day (image)
+GET | /api/reboarding/layout?userId={userId}&day={day} | Get the location of the reserved seat on a given day (image)
+
  
