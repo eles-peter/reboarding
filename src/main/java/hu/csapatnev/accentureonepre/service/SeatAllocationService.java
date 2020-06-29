@@ -50,8 +50,12 @@ public class SeatAllocationService {
         List<Future<List<Point>>> subResultFutureList = new ArrayList<>();
 
         for (List<Point> separatedPointList : separatedPointListList) {
-            Future<List<Point>> subResult = executorService.submit(new SeatAllocationGenerator(separatedPointList, socDist));
-            subResultFutureList.add(subResult);
+            if (separatedPointList.size() <= 2) {
+                result.add(separatedPointList.get(0));
+            } else {
+                Future<List<Point>> subResult = executorService.submit(new SeatAllocationGenerator(separatedPointList, socDist));
+                subResultFutureList.add(subResult);
+            }
         }
 
         for (Future<List<Point>>subResultFuture : subResultFutureList) {
@@ -61,6 +65,8 @@ public class SeatAllocationService {
                 e.printStackTrace();
             }
         }
+
+        executorService.shutdown();
 
         long endTime = System.nanoTime();
         long totalTimeMilliSec = (endTime - startTime) / 1000000;
