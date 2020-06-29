@@ -23,9 +23,9 @@ jobs:
           node-version: '12.x'
       # Run Api tests
       - name: Sleep for 3 min
-          uses: jakejarvis/wait-action@master
-          with:
-            time: '180s'
+        uses: jakejarvis/wait-action@master
+        with:
+          time: '180s'
       - name: Postman tests
         working-directory: ./postman
         run: |
