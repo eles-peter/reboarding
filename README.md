@@ -1,6 +1,7 @@
 # Reboarding to the office
-Accenture competition second round
-
+Accenture competition second round<br>
+- [First round description](first_round_descripton.md)<br>
+- [Second round description](second_round_descripton.md)<br>
 ## Running in docker
 Build the image:  
 `docker image build -t reboarding .`
