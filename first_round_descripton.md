@@ -54,3 +54,5 @@ Amennyiben a megvalósítás során adatbázis használata mellett döntenek, ak
 **Feladat leadás:<br>**
 **A megoldások beadása GitHub/GitLab repository megosztásával a JunctionApp felületén történik.<br>**
 **Leadási határidő: 06.16 23.59.**
+
+**[BACK TO README](README.md)**<br>
