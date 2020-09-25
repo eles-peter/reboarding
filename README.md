@@ -15,12 +15,12 @@ office layout are stored in the resources. Seat coordinates mapped in advance by
 `seat-coordinates.json`.
 
 **List of arguments:**  
---date.stepTo1  
---date.stepTo2  
---date.stepTo3  
---date.stepTo5  
---date.endOfPeriod 
---numberInWaitnigListBeforeNotification
+- date.stepTo1  
+- date.stepTo2  
+- date.stepTo3  
+- date.stepTo5  
+- date.endOfPeriod 
+- numberInWaitnigListBeforeNotification
 
 ## Distribute seats
 To pack the most people to the office with the given distance criteria, the problem can be represented as a graph. 
